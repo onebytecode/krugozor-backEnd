@@ -1,0 +1,30 @@
+{
+  "name": "core",
+  "version": "0.0.0",
+  "description": "Core backend for anticafe",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "NODE_ENV=test mocha -r ts-node/register src/**/*.spec.ts",
+    "start:prod": "node dist",
+    "start": "nodemon dist",
+    "prestart": "tsc -p tsconfig.json"
+  },
+  "author": "Onebytecode",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chai": "^4.0.4",
+    "@types/mocha": "^2.2.43",
+    "@types/node": "^8.0.31",
+    "chai": "^4.1.2",
+    "colors": "^1.1.2",
+    "mocha": "^3.5.3",
+    "morgan": "^1.9.0",
+    "nodemon": "^1.12.1",
+    "ts-node": "^3.3.0",
+    "typescript": "^2.5.3"
+  },
+  "dependencies": {
+    "express": "^4.16.0",
+    "mongoose": "^4.11.13"
+  }
+}
