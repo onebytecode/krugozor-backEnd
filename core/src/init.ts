@@ -8,7 +8,7 @@ export default async function () {
     console.log('Init applicaction')
 
     const server: Server = new Server(8080)
-    const db: Database   = new Database(ENV, __dirname)
+    const db: Database   = new Database(ENV)
 
     server.assignMorgan()
     server.assignDefaultRoutes()

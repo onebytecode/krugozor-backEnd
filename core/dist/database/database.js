@@ -10,11 +10,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const Mongoose = require("mongoose");
 const config = require('./config.json');
+Mongoose.Promise = Promise;
 class Database {
-    constructor(env, root) {
+    constructor(env) {
         this.mongoose = Mongoose;
-        this.uri = this.getUri();
         this.ENV = env;
+        this.uri = this.getUri();
     }
     getUri() {
         switch (this.ENV) {
@@ -29,7 +30,7 @@ class Database {
     }
     getMongoose() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.mongoose.connections[0].host !== undefined)
+            if (this.mongoose.connections[0].host)
                 return this.mongoose;
             yield this.connect();
             return this.mongoose;

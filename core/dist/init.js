@@ -15,7 +15,7 @@ function default_1() {
     return __awaiter(this, void 0, void 0, function* () {
         console.log('Init applicaction');
         const server = new server_1.Server(8080);
-        const db = new database_1.Database(ENV, __dirname);
+        const db = new database_1.Database(ENV);
         server.assignMorgan();
         server.assignDefaultRoutes();
         db.getMongoose()
