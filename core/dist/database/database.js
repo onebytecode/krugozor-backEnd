@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Mongoose = require("mongoose");
+const config = require('./config.json');
 class Database {
     constructor(env, root) {
         this.mongoose = Mongoose;
@@ -17,8 +18,8 @@ class Database {
     }
     getUri() {
         switch (this.ENV) {
-            case 'test': return "mongodb://localhost/anticafe_test";
-            case 'dev': return "mongodb://localhost/anticafe_dev";
+            case 'test': return config.uri.test;
+            case 'dev': return config.uri.dev;
         }
     }
     connect() {
