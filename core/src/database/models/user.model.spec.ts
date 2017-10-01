@@ -14,7 +14,7 @@ describe('User model', () => {
     })
 
     afterEach(async () => {
-        await clearDb({ mongoose: Mongoose })
+        await clearDb({ mongoose: Mongoose, silent: true })
     })
 
     it ('should create User model in database', async () => {
@@ -41,5 +41,34 @@ describe('User model', () => {
         expect(result.name).to.be.equal("Michael Jackson")
         expect(result.phone).to.be.equal("8-999-777-66-55")
         expect(result.password).to.be.equal("superpass")
+    })
+
+    it ('should update user', async () => {
+        await User.create({
+            name: "Michael Jackson",
+            phone: "8-999-777-66-55",
+            password: "superpass"
+        })
+
+        await User.update({ name: "Michael Jackson" }, { name: "Aerosmith" })
+
+        const user = await User.find({ name: "Aerosmith" })
+
+        expect(user.name).to.be.equal('Aerosmith')
+        expect(user.phone).to.be.equal("8-999-777-66-55")
+        expect(user.password).to.be.equal("superpass")
+    })
+
+    it ('should delete user', async () => {
+        await User.create({
+            name: "Michael Jackson",
+            phone: "8-999-777-66-55",
+            password: "superpass"
+        })
+
+        await User.delete({ name: "Michael Jackson" })
+        const user = await User.find({ name: "Michael Jackson" })
+
+        expect(user).to.be.null 
     })
 })
