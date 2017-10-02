@@ -1,9 +1,11 @@
 import * as graphql from 'graphql'
 import * as gqlHTTP from 'express-graphql'
 import { Router }   from 'express'
-import { User }     from '../../../../database/models/user.model'
 
-import { UserModel } from './gql-models/user.gql-model'
+import {
+    getUser,
+    createUser
+} from './gql-models/user.gql-model'
 
 import { 
             GraphQLObjectType, 
@@ -15,37 +17,18 @@ import {
 
 export function Api (): Router {
     const router = Router()
-    const userModelType = UserModel()
 
     const queryType = new GraphQLObjectType({
         name: 'Query',
         fields: {
-            getUser: {
-                type: userModelType,
-                args: { name: { type: GraphQLString } },
-                resolve: async function(_, { name }) {
-                    const result = await User.find({ name })
-                    return result 
-                }
-            }
+            getUser
         }
     })
 
     const mutationType = new GraphQLObjectType({
         name: 'Mutation',
         fields: {
-            setUser: {
-                type: userModelType,
-                args: {
-                    name: { type: GraphQLString },
-                    phone: { type: GraphQLString },
-                    password: { type: GraphQLString }
-                },
-                resolve: async function(_, userParams) {
-                    const result = await User.create(userParams)
-                    return result 
-                }
-            }
+            createUser
         }
     })
 
