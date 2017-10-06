@@ -11,18 +11,36 @@ interface FileStorage {
 
 let files: Array<FileStorage> = new Array();
 
-const analyzeDirRecursively = (dirname: string) => {
-    const result = fs.readdirSync(dirname)
-    if (result.length === 0) return 
-    const _files: Array<FileStorage> = result.map(filename => filterFiles(filename, dirname))
-    const directories = result.filter(filename => {
-        const __tmpfile = dirname + `/${filename}`
-        return fs.lstatSync(__tmpfile).isDirectory()
+export const analyseDirRecursively = (dirname: string, include?: RegExp): Array<FileStorage> => {
+
+    const result : Array<FileStorage> = new Array()
+    if (!include) include = /.+/
+    const filenames = fs.readdirSync(dirname)
+    const files = filenames.filter(fName => {
+        const __relFilename = `${dirname}/${fName}`
+        const isFile = fs.lstatSync(__relFilename).isFile()
+        const isTS   = /\.ts/.test(fName)
+        const isSpec = include.test(fName)
+        if (isFile && !isTS && isSpec) {
+            result.push({
+                name: fName,
+                path: dirname 
+            })
+        }
     })
-    files = files.concat(_files).filter(__fn => __fn)
+    const directories = filenames.filter(fName => {
+        const __relFilename = `${dirname}/${fName}`
+        return fs.lstatSync(__relFilename).isDirectory()
+    })
+
     directories.forEach(__dir => {
-        analyzeDirRecursively(dirname + `/${__dir}`)
+        const __tmpDir = dirname + `/${__dir}`
+        const __res = analyseDirRecursively(__tmpDir)
+        if (!__res[0]) return 
+        __res.forEach(r => result.push(r))
     })
+
+    return result 
 }
 
 const filterFiles = (filename: string, dirname: string) : FileStorage => {
@@ -38,7 +56,7 @@ const filterFiles = (filename: string, dirname: string) : FileStorage => {
     }
 }
 
-const trimDirname = (arr: Array<FileStorage>, root: string) : Array<FileStorage> => {
+export const trimDirname = (arr: Array<FileStorage>, root: string) : Array<FileStorage> => {
     const rootLength: number = root.length 
     const result = arr.map(__fs => {
         __fs.path = __fs.path.substring(rootLength)
@@ -51,6 +69,7 @@ const trimDirname = (arr: Array<FileStorage>, root: string) : Array<FileStorage>
 const compileFiles = (arr: Array<FileStorage>) => {
     arr.forEach(__el => {
         const relFile = __el.path + '/' + __el.name
+        console.log(relFile)
         const nFile = sourceDirname + relFile
         const sFile = distDirname + relFile 
         const rStream = fs.createReadStream(nFile)
@@ -59,7 +78,7 @@ const compileFiles = (arr: Array<FileStorage>) => {
     })
 }
 
-analyzeDirRecursively(sourceDirname)
-const nArr = trimDirname(files, sourceDirname)
+const fArr = analyseDirRecursively(sourceDirname)
+const nArr = trimDirname(fArr, sourceDirname)
 compileFiles(nArr)
 
