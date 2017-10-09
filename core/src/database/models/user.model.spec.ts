@@ -9,66 +9,35 @@ import { User, IUserModel } from './user.model'
 
 describe('User model', () => {
     beforeEach( async () => {
-        if (Mongoose.connections[0].host) return 
-        await Mongoose.connect(dbUri)
+        if (!Mongoose.connections[0].host) await Mongoose.connect(dbUri)
+        await User.create({
+            fname: "Michael",
+            lname: "Jackson",
+            patronymic: "Jackson",
+            birthdate: new Date("01 01 1978"),
+            phoneNumber: "8-900-888-55-66",
+            email: "jackson@mail.com"
+        })
     })
 
     afterEach(async () => {
         await clearDb({ mongoose: Mongoose, silent: true })
     })
 
-    it ('should create User model in database', async () => {
-        const user : IUserModel = await User.create({
-            name: "Michael Jackson",
-            phone: "8-999-777-66-55",
-            password: "superpass"
-        })
+    it ('should find user', async () => {
+        const user = await User.find({ email: "jackson@mail.com" })
 
-        expect(user.name).to.be.equal('Michael Jackson')
-        expect(user.phone).to.be.equal('8-999-777-66-55')
-        expect(user.password).to.be.equal('superpass')
+        expect(user.fname).to.be.equal('Michael')
+        expect(user.lname).to.be.equal('Jackson')
+        expect(user.phoneNumber).to.be.equal('8-900-888-55-66')
     })
 
-    it ('should find User', async () => {
-        await User.create({
-            name: "Michael Jackson",
-            phone: "8-999-777-66-55",
-            password: "superpass"
-        })
+    it ('should create session', async () => {
+        const result = await User.startSession({ email: "jackson@mail.com" })
+        const user   = await User.find({ email: "jackson@mail.com" })
 
-        const result = await User.find({ name: "Michael Jackson" })
-
-        expect(result.name).to.be.equal("Michael Jackson")
-        expect(result.phone).to.be.equal("8-999-777-66-55")
-        expect(result.password).to.be.equal("superpass")
+        expect(user.sessionId).to.be.equal(result)
     })
 
-    it ('should update user', async () => {
-        await User.create({
-            name: "Michael Jackson",
-            phone: "8-999-777-66-55",
-            password: "superpass"
-        })
-
-        await User.update({ name: "Michael Jackson" }, { name: "Aerosmith" })
-
-        const user = await User.find({ name: "Aerosmith" })
-
-        expect(user.name).to.be.equal('Aerosmith')
-        expect(user.phone).to.be.equal("8-999-777-66-55")
-        expect(user.password).to.be.equal("superpass")
-    })
-
-    it ('should delete user', async () => {
-        await User.create({
-            name: "Michael Jackson",
-            phone: "8-999-777-66-55",
-            password: "superpass"
-        })
-
-        await User.delete({ name: "Michael Jackson" })
-        const user = await User.find({ name: "Michael Jackson" })
-
-        expect(user).to.be.null 
-    })
+    
 })
