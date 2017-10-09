@@ -4,7 +4,10 @@ import { Router }   from 'express'
 
 import {
     getUser,
-    createUser
+    registerNewVisitor,
+    visitorExists,
+    userLogIn,
+    userLogOut
 } from './gql-models/user.gql-model'
 
 import { 
@@ -21,14 +24,17 @@ export function Api (): Router {
     const queryType = new GraphQLObjectType({
         name: 'Query',
         fields: {
-            getUser
+            getUser,
+            visitorExists
         }
     })
 
     const mutationType = new GraphQLObjectType({
         name: 'Mutation',
         fields: {
-            createUser
+            registerNewVisitor,
+            userLogIn,
+            userLogOut
         }
     })
 

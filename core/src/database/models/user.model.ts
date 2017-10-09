@@ -8,7 +8,7 @@ export interface IUserModel extends Document {
     patronymic?: String
     gender?: String 
     birthdate?: Date  
-    phoneNumber?: String 
+    phoneNumber: String 
     email: String 
     sessionId?: String 
     password?: String 
@@ -94,6 +94,16 @@ export class User {
             const session = await Session.create({ id: user._id })
             user.sessionId = session._id 
             await user.save()
+            return session._id.toString() 
+        } catch (e) {
+            throw new Error(e)
+        }
+    }
+
+    public static async stopSession(userQuery: IUserQuery): Promise<String> {
+        try {
+            const user = await User.find(userQuery)
+            const session = await Session.delete({ id: user._id })
             return session._id.toString() 
         } catch (e) {
             throw new Error(e)
