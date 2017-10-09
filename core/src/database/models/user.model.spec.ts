@@ -39,5 +39,12 @@ describe('User model', () => {
         expect(user.sessionId).to.be.equal(result)
     })
 
+    it ('should stop user session', async () => {
+        const sessionId = await User.startSession({ email: "jackson@mail.com" })
+        const stoppedSessionId = await User.stopSession({ email: "jackson@mail.com" })
+
+        expect(sessionId).to.be.equal(stoppedSessionId.toString())
+    })
+
     
 })
