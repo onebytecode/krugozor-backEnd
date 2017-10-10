@@ -7,7 +7,7 @@ services:
       - "27017:27017"
 
   b_anticafe_core: 
-    image: b_anticafe_core
+    image: onebytecode/b_anticafe_core
     container_name: b_anticafe_core
     depends_on:
       - mongodb
