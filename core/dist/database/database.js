@@ -18,9 +18,11 @@ class Database {
         this.uri = this.getUri();
     }
     getUri() {
+        console.log(this.ENV);
         switch (this.ENV) {
             case 'test': return config.uri.test;
             case 'dev': return config.uri.dev;
+            case 'production': return config.uri.production;
         }
     }
     connect() {
