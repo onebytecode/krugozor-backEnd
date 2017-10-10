@@ -5,9 +5,10 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "NODE_ENV=test mocha --timeout 10000 -r ts-node/register src/main.spec.ts",
-    "start:prod": "node dist",
+    "start:prod": "NODE_ENV=production node dist",
     "start": "nodemon dist",
-    "prestart": "tsc -p tsconfig.json && ts-node readall.ts"
+    "prestart": "tsc -p tsconfig.json && ts-node readall.ts",
+    "prestart:prod": "tsc -p tsconfig.json && ts-node readall.ts"
   },
   "author": "Onebytecode",
   "license": "MIT",
