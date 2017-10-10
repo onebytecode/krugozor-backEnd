@@ -4,6 +4,6 @@ node_js:
 services: 
  - "mongodb"
 script: 
- - "npm test"
+ - "npm ./core test"
 after_success:
- - "npm run-script docker-hook"
+ - "npm run-script ./core/scripts/docker-hook"
