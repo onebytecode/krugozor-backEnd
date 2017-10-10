@@ -2,9 +2,9 @@ FROM mhart/alpine-node:8.6.0
 
 
 WORKDIR /src
-ADD . .
+ADD ./core .
 
-ADD package.json src/package.json
+ADD ./core/package.json src/package.json
 RUN npm install
 
 EXPOSE 8080
