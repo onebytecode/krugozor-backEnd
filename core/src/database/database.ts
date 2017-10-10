@@ -14,9 +14,11 @@ export class Database {
     }
 
     private getUri(): String {
+        console.log(this.ENV)
         switch(this.ENV) {
             case 'test': return config.uri.test
             case 'dev':  return config.uri.dev
+            case 'production': return config.uri.production
         }
     }
 
