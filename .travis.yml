@@ -1,9 +1,12 @@
+branches:
+  only:
+   - "develop"
 language: node_js
 node_js: 
- - "8.6.0"
+  - "8.6.0"
 services: 
- - "mongodb"
+  - "mongodb"
 script: 
- - "npm ./core test"
+  - "cd ./core && npm test"
 after_success:
- - "npm run-script ./core/scripts/docker-hook"
+  - "npm run-script docker-hook"
