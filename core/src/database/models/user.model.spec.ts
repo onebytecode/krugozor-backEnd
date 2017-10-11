@@ -43,6 +43,7 @@ describe('User model', () => {
         const sessionId = await User.startSession({ email: "jackson@mail.com" })
         const stoppedSessionId = await User.stopSession({ email: "jackson@mail.com" })
 
+        
         expect(sessionId).to.be.equal(stoppedSessionId.toString())
     })
 
