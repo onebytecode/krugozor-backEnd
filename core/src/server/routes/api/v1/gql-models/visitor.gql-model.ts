@@ -5,9 +5,9 @@ import {
     GraphQLBoolean
 } from 'graphql'
 
-import { User } from '../../../../../database/models/user.model'
+import { Visitor } from '../../../../../database/models/visitor.model'
 
-const userFields = {
+const visitorFields = {
     fname: { type: new GraphQLNonNull(GraphQLString) },
     lname: { type: GraphQLString },
     patronymic: { type: GraphQLString },
@@ -17,35 +17,35 @@ const userFields = {
     phoneNumber: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: GraphQLString }
 }
-export const userModel = new GraphQLObjectType({
-    name: 'User',
-    fields: userFields
+export const visitorModel = new GraphQLObjectType({
+    name: 'Visitor',
+    fields: visitorFields
 }) 
 
-export const getUser = {
-        type: userModel,
+export const getVisitor = {
+        type: visitorModel,
         args: {
             email: { type: GraphQLString },
             sessionId: { type: GraphQLString }
         },
         resolve: async function(_, { email, sessionId }) {
-            const result = await User.find({ email, sessionId })
+            const result = await Visitor.find({ email, sessionId })
             return result 
         }
 }
 
 export const registerNewVisitor = {
-    type: userModel,
-    args: userFields,
-    resolve: async function(_, userParams) {
-        const result = await User.create(userParams)
+    type: visitorModel,
+    args: visitorFields,
+    resolve: async function(_, visitorParams) {
+        const result = await Visitor.create(visitorParams)
         return result 
     }
 }
 
 export const visitorExists = {
     type: new GraphQLObjectType({
-        name: 'ExistsUserType',
+        name: 'ExistsVisitorType',
         fields: {
             exists: { type: new GraphQLNonNull(GraphQLString) }
         }
@@ -54,15 +54,15 @@ export const visitorExists = {
         email: { type: new GraphQLNonNull(GraphQLString) }
     },
     resolve: async function(_, { email }) {
-        const user = await User.find({ email })
-        const result = user !== null 
+        const visitor = await Visitor.find({ email })
+        const result = visitor !== null 
         return { exists: result }
     }
 }
 
-export const userLogIn = {
+export const visitorLogIn = {
     type: new GraphQLObjectType({
-        name: 'UserLoginType',
+        name: 'VisitorLoginType',
         fields: {
             sessionId: { type: new GraphQLNonNull(GraphQLString) }
         }
@@ -71,14 +71,14 @@ export const userLogIn = {
         email: { type: new GraphQLNonNull(GraphQLString) }
     },
     resolve: async function(_, { email }) {
-        const sessionId = await User.startSession({ email })
+        const sessionId = await Visitor.startSession({ email })
         return { sessionId }
     }
 }
 
-export const userLogOut = {
+export const visitorLogOut = {
     type: new GraphQLObjectType({
-        name: 'UserLogOutType',
+        name: 'VisitorLogOutType',
         fields: { 
             sessionId: { type: new GraphQLNonNull(GraphQLString) }
         }
@@ -87,13 +87,13 @@ export const userLogOut = {
         email: { type: new GraphQLNonNull(GraphQLString) }
     },
     resolve: async function(_, { email }) {
-        const sessionId = await User.stopSession({ email })
+        const sessionId = await Visitor.stopSession({ email })
         return { sessionId } 
     }
 }
 
-export const updateUser = {
-    type: userModel,
+export const updateVisitor = {
+    type: visitorModel,
     args: {
 
     }

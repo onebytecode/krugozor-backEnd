@@ -6,7 +6,7 @@ export function Routes(): Router {
 
     router.route('/')
         .get(function(req, res) {
-            res.send('Hello, world! ...and now in focken typescript!')
+            res.send('Very welcome to Anticafe API!')
         })
 
     router.use('/gql', Api())
