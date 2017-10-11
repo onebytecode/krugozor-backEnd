@@ -3,12 +3,12 @@ import * as gqlHTTP from 'express-graphql'
 import { Router }   from 'express'
 
 import {
-    getUser,
+    getVisitor,
     registerNewVisitor,
     visitorExists,
-    userLogIn,
-    userLogOut
-} from './gql-models/user.gql-model'
+    visitorLogIn,
+    visitorLogOut
+} from './gql-models/visitor.gql-model'
 
 import { 
             GraphQLObjectType, 
@@ -24,8 +24,7 @@ export function Api (): Router {
     const queryType = new GraphQLObjectType({
         name: 'Query',
         fields: {
-            getUser,
-            visitorExists
+            getVisitor
         }
     })
 
@@ -33,8 +32,8 @@ export function Api (): Router {
         name: 'Mutation',
         fields: {
             registerNewVisitor,
-            userLogIn,
-            userLogOut
+            visitorLogIn,
+            visitorLogOut
         }
     })
 
