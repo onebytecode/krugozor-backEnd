@@ -6,7 +6,7 @@ function Routes() {
     const router = express_1.Router();
     router.route('/')
         .get(function (req, res) {
-        res.send('Hello, world! ...and now in focken typescript!');
+        res.send('Very welcome to Anticafe API!');
     });
     router.use('/gql', api_1.Api());
     return router;

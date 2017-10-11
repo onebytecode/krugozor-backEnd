@@ -2,6 +2,6 @@
     "uri": {
         "dev": "mongodb://localhost/anticafe_dev",
         "test": "mongodb://localhost/anticafe_test",
-        "production": "mongodb://localhost/anticafe_core"
+        "production": "mongodb://mongodb/anticafe_core"
     }
 }

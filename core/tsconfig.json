@@ -5,7 +5,8 @@
         "sourceMap": true,
         "pretty": true,
         "outDir": "./dist",
-        "removeComments": true
+        "removeComments": true,
+        "allowJs": true
     },
     "include": [
         "./src/**/*.ts",
