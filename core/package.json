@@ -14,9 +14,11 @@
   "license": "MIT",
   "devDependencies": {
     "@types/chai": "^4.0.4",
+    "@types/chai-http": "^3.0.3",
     "@types/mocha": "^2.2.43",
     "@types/node": "^8.0.31",
     "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
     "colors": "^1.1.2",
     "mocha": "^3.5.3",
     "mongo-interlude": "^0.1.1",

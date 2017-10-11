@@ -9,12 +9,13 @@ export class Server {
     app:    express
     port:   Number
     routes: Router
-
+    env: string 
 
     constructor(port: Number) {
         this.app = express()
         this.port = port 
         this.routes = Routes()
+        this.env = process.env.NODE_ENV || 'dev'
     }
 
     assignMorgan() {
@@ -25,10 +26,12 @@ export class Server {
         this.app.use(this.routes)
     }
 
-    run() {
-        this.app.listen(this.port, () => {
-            
-            console.log(color.cyan(`App listen on ::${this.port}::`))
+    run(): Promise<Boolean> {
+        return new Promise((resolve, reject) => {
+            this.app.listen(this.port, () => {
+                resolve(true)
+                if (this.env !== 'test' ) console.log(color.cyan(`App listen on ::${this.port}::`))
+            })
         })
     }
 }

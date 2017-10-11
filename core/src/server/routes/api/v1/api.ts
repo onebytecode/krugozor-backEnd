@@ -5,7 +5,6 @@ import { Router }   from 'express'
 import {
     getVisitor,
     registerNewVisitor,
-    visitorExists,
     visitorLogIn,
     visitorLogOut
 } from './gql-models/visitor.gql-model'
