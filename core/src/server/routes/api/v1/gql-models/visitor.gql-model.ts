@@ -15,7 +15,10 @@ const visitorFields = {
     birthdate: { type: GraphQLString },
     email: { type: new GraphQLNonNull(GraphQLString) },
     phoneNumber: { type: new GraphQLNonNull(GraphQLString) },
-    password: { type: GraphQLString }
+    password: { type: GraphQLString },
+    entryTimestamp: { type: GraphQLString },
+    exitTimestamp: { type: GraphQLString },
+    id: { type: GraphQLString }
 }
 export const visitorModel = new GraphQLObjectType({
     name: 'Visitor',
@@ -29,7 +32,14 @@ export const getVisitor = {
             sessionId: { type: GraphQLString }
         },
         resolve: async function(_, { email, sessionId }) {
-            const result = await Visitor.find({ email, sessionId })
+            let result;
+            if (email) {
+                result = await Visitor.find({ email })
+            } else {
+                result = await Visitor.find({ sessionId })
+            }
+            result['id'] = result._id 
+
             return result 
         }
 }
