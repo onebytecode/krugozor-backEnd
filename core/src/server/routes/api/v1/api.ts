@@ -6,7 +6,9 @@ import {
     getVisitor,
     registerNewVisitor,
     visitorLogIn,
-    visitorLogOut
+    visitorLogOut,
+    visitorEntry,
+    visitorExit
 } from './gql-models/visitor.gql-model'
 
 import { 
@@ -32,7 +34,9 @@ export function Api (): Router {
         fields: {
             registerNewVisitor,
             visitorLogIn,
-            visitorLogOut
+            visitorLogOut,
+            visitorEntry,
+            visitorExit
         }
     })
 

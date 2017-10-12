@@ -3,11 +3,11 @@ import { Schema, Document } from 'mongoose'
 
 
 export interface ISessionModel {
-    id: string 
+    id: Schema.Types.ObjectId 
 }
 
 const SessionSchema = new Schema({
-    id: { type: String, required: true },
+    id: { type: Schema.Types.ObjectId, required: true },
     createdAt: Date,
     updatedAt: Date 
 })
