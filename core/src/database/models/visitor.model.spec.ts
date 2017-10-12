@@ -95,7 +95,7 @@ describe('Visitor model', () => {
         const visitor = await Visitor.find({ email: 'jackson@mail.com' })
         const result = await Visitor.entry({ _id: visitor._id })
 
-        expect(result).to.equal(true)
+        expect(result).to.not.be.undefined 
     })
 
     it ('should exit a Visitor', async () => {
@@ -103,7 +103,7 @@ describe('Visitor model', () => {
         await Visitor.entry({ _id: visitor._id })
         const result = await Visitor.exit({ _id: visitor._id })
 
-        expect(result).to.equal(true)
+        expect(result).to.not.be.undefined 
     })
 
     
