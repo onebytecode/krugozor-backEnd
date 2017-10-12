@@ -80,5 +80,31 @@ describe('Visitor model', () => {
         expect(uVisitor.exitTimestamp).to.not.be.undefined
     })
 
+    it('should have multiply visits', async () => {
+        const visitor = await Visitor.find({ email: 'jackson@mail.com' })
+        await Visit.start({ visitorId: visitor._id })
+        await Visit.stop({ visitorId: visitor._id })
+        await Visit.start({ visitorId: visitor._id })
+        await Visit.stop({ visitorId: visitor._id })
+        const uVisitor = await Visitor.find({ email: 'jackson@mail.com' })
+
+        expect(uVisitor.visits.length).to.equal(2)
+    })
+
+    it ('should entry a Visitor', async () => {
+        const visitor = await Visitor.find({ email: 'jackson@mail.com' })
+        const result = await Visitor.entry({ _id: visitor._id })
+
+        expect(result).to.equal(true)
+    })
+
+    it ('should exit a Visitor', async () => {
+        const visitor = await Visitor.find({ email: 'jackson@mail.com' })
+        await Visitor.entry({ _id: visitor._id })
+        const result = await Visitor.exit({ _id: visitor._id })
+
+        expect(result).to.equal(true)
+    })
+
     
 })

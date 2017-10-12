@@ -140,4 +140,20 @@ export class Visitor {
         const visitor = await Visitor.find(visitorQuery)
         return visitor !== null 
     }
+
+    public static async entry(visitorQuery: IVisitorQuery): Promise<boolean> {
+        const visitor = await Visitor.find(visitorQuery)
+        if (visitor === null) throw new Error('Visitor does not exist!')
+        if (visitor.currentVisit) throw new Error('Visitor already entered!')
+        const visit = await Visit.start({ visitorId: visitor._id })
+        if (visit === null) throw new Error('Cannot create visit model!')
+        return true 
+    }
+
+    public static async exit(visitorQuery: IVisitorQuery): Promise<boolean> {
+        const visitor = await Visitor.find(visitorQuery)
+        if (!visitor.currentVisit) throw new Error('Visitor does not enter anticafe!')
+        const result = await Visit.stop({ visitorId: visitor._id })
+        return result !== null 
+    }
 }

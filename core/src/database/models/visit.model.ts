@@ -48,13 +48,13 @@ export class Visit {
     }
 
     public static async stop(query: IVisitQuery): Promise<IVisitModel> {
-        const visit = await VisitModel.findOne({ visitorId: query.visitorId })
+        const visit   = await VisitModel.findOne({ visitorId: query.visitorId })
         visit.endedAt = new Date()
-        const result = await visit.save()
+        const result  = await visit.save()
 
         const visitor = await Visitor.find({ _id: query.visitorId })
         visitor.exitTimestamp = visit.endedAt
-        visitor.currentVisit = undefined
+        visitor.currentVisit  = undefined
         await visitor.save()
 
         return result  
