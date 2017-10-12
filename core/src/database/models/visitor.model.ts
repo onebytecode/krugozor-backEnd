@@ -12,9 +12,11 @@ export interface IVisitorModel extends Document {
     phoneNumber: String 
     email: String 
     sessionId?: Schema.Types.ObjectId 
-    password?: String,
+    password?: String
     currentVisit?: Schema.Types.ObjectId
     visits?: Array<Schema.Types.ObjectId>
+    entryTimestamp?: Date 
+    exitTimestamp?: Date 
 }
 
 interface IUpdateVisitorQuery {
@@ -29,6 +31,8 @@ interface IUpdateVisitorQuery {
     password?: String,
     currentVisit?: Schema.Types.ObjectId
     visits?: Array<Schema.Types.ObjectId>
+    entryTimestamp?: Date 
+    exitTimestamp?: Date 
 }
 
 interface IVisitorQuery {
@@ -49,7 +53,9 @@ const VisitorSchema = new Schema ({
     createdAt: { type: Date },
     updatedAt: { type: Date },
     visits: [{ type: Schema.Types.ObjectId, ref: 'visit' }],
-    currentVisit: { type: Schema.Types.ObjectId, ref: 'visit' }
+    currentVisit: { type: Schema.Types.ObjectId, ref: 'visit' },
+    entryTimestamp: { type: Date },
+    exitTimestamp: { type: Date }
 })
 
 VisitorSchema.pre('save', function(next) {

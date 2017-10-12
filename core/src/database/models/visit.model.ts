@@ -28,6 +28,11 @@ const VisitModel = Mongoose.model<IVisitModel>('visit', VisitSchema)
 
 export class Visit {
 
+    public static async find(query: IVisitQuery): Promise<IVisitModel> {
+        const visit = await VisitModel.findOne(query)
+        return visit 
+    }
+
     public static async start(query: IVisitQuery): Promise<IVisitModel> {
         const visitor = await Visitor.find({ _id: query.visitorId })
         const isVisitorExists = visitor !== null 
@@ -35,6 +40,7 @@ export class Visit {
         const visit = await VisitModel.create({ visitorId: query.visitorId })
         
         visitor.currentVisit = visit._id 
+        visitor.entryTimestamp = visit.startedAt
         visitor.visits.push(visit._id)
         await visitor.save()
 
@@ -47,6 +53,7 @@ export class Visit {
         const result = await visit.save()
 
         const visitor = await Visitor.find({ _id: query.visitorId })
+        visitor.exitTimestamp = visit.endedAt
         visitor.currentVisit = undefined
         await visitor.save()
 

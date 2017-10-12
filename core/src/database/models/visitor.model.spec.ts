@@ -6,6 +6,7 @@ import { clearDb } from 'mongo-interlude'
 const dbUri: string = require('../config').uri.test 
 
 import { Visitor, IVisitorModel } from './visitor.model'
+import { Visit } from './visit.model';
 
 describe('Visitor model', () => {
     beforeEach( async () => {
@@ -52,6 +53,31 @@ describe('Visitor model', () => {
         const stoppedSessionId = await Visitor.stopSession({ email: "jackson@mail.com" })
 
         expect(sessionId).to.deep.equal(stoppedSessionId)
+    })
+
+    it ('should get entry timestamp of undefined', async () => {
+        const visitor = await Visitor.find({ email: 'jackson@mail.com' })
+
+        expect(visitor.entryTimestamp).to.be.undefined
+    })
+
+    it ('should get time of entry', async () => {
+        const visitor = await Visitor.find({ email: 'jackson@mail.com' })
+        await Visit.start({ visitorId: visitor._id })
+        const uVisitor = await Visitor.find({ email: 'jackson@mail.com' })
+
+        expect(uVisitor.entryTimestamp).to.not.be.undefined 
+        expect(uVisitor.exitTimestamp).to.be.undefined 
+    })
+
+    it ('should get time of exit', async () => {
+        const visitor = await Visitor.find({ email: 'jackson@mail.com' })
+        await Visit.start({ visitorId: visitor._id })
+        await Visit.stop({ visitorId: visitor._id })
+        const uVisitor = await Visitor.find({ email: 'jackson@mail.com' })
+
+        expect(uVisitor.entryTimestamp).to.not.be.undefined 
+        expect(uVisitor.exitTimestamp).to.not.be.undefined
     })
 
     
