@@ -1,6 +1,7 @@
-import * as Mongoose from 'mongoose'
-import { Schema, Document }    from 'mongoose'
-import { Session } from './session.model'
+import * as Mongoose from 'mongoose';
+import { Schema, Document }    from 'mongoose';
+import { Session } from './session.model';
+import { Visit } from './visit.model';
 
 export interface IVisitorModel extends Document {
     fname: String
@@ -10,13 +11,30 @@ export interface IVisitorModel extends Document {
     birthdate?: Date  
     phoneNumber: String 
     email: String 
-    sessionId?: String 
-    password?: String 
+    sessionId?: Schema.Types.ObjectId 
+    password?: String,
+    currentVisit?: Schema.Types.ObjectId
+    visits?: Array<Schema.Types.ObjectId>
+}
+
+interface IUpdateVisitorQuery {
+    fname?: String
+    lname?: String
+    patronymic?: String
+    gender?: String 
+    birthdate?: Date  
+    phoneNumber?: String 
+    email?: String 
+    sessionId?: Schema.Types.ObjectId 
+    password?: String,
+    currentVisit?: Schema.Types.ObjectId
+    visits?: Array<Schema.Types.ObjectId>
 }
 
 interface IVisitorQuery {
+    _id?: Number  
     email?: String 
-    sessionId?: String
+    sessionId?: Schema.Types.ObjectId
 }
 
 const VisitorSchema = new Schema ({
@@ -24,12 +42,14 @@ const VisitorSchema = new Schema ({
     lname: String,
     patronymic: String,
     gender: String,
-    sessionId: { type: String, ref: 'session' },
+    sessionId: { type: Schema.Types.ObjectId, ref: 'session' },
     birthdate: Date,
     phoneNumber: { type: String, required: true },
     email: { type: String, required: true },
     createdAt: { type: Date },
-    updatedAt: { type: Date }
+    updatedAt: { type: Date },
+    visits: [{ type: Schema.Types.ObjectId, ref: 'visit' }],
+    currentVisit: { type: Schema.Types.ObjectId, ref: 'visit' }
 })
 
 VisitorSchema.pre('save', function(next) {
@@ -61,7 +81,7 @@ export class Visitor {
         }
     }
 
-    public static async update(params: IVisitorQuery, visitor: IVisitorModel): Promise<Document<IVisitorModel>> {
+    public static async update(params: IVisitorQuery, visitor: IUpdateVisitorQuery): Promise<IVisitorModel> {
         try {
             const __visitor = await Visitor.find(params)
             if (!__visitor) return 
@@ -94,7 +114,7 @@ export class Visitor {
             const session = await Session.create({ id: visitor._id })
             visitor.sessionId = session._id 
             await visitor.save()
-            return session._id.toString() 
+            return session._id
         } catch (e) {
             throw new Error(e)
         }
@@ -104,9 +124,14 @@ export class Visitor {
         try {
             const visitor = await Visitor.find(visitorQuery)
             const session = await Session.delete({ id: visitor._id })
-            return session._id.toString() 
+            return session._id
         } catch (e) {
             throw new Error(e)
         }
+    }
+
+    public static async exists(visitorQuery: IVisitorQuery): Promise<boolean> {
+        const visitor = await Visitor.find(visitorQuery)
+        return visitor !== null 
     }
 }

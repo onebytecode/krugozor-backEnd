@@ -32,19 +32,26 @@ describe('Visitor model', () => {
         expect(visitor.phoneNumber).to.be.equal('8-900-888-55-66')
     })
 
+    it ('should update visitor', async () => {
+        await Visitor.update({ email: 'jackson@mail.com' }, { fname: 'Mike' })
+
+        const visitor = await Visitor.find({ email: 'jackson@mail.com' })
+
+        expect(visitor.fname).to.equal('Mike')
+    })
+
     it ('should create session', async () => {
         const result = await Visitor.startSession({ email: "jackson@mail.com" })
         const visitor   = await Visitor.find({ email: "jackson@mail.com" })
 
-        expect(visitor.sessionId).to.be.equal(result)
+        expect(visitor.sessionId).to.deep.equal(result)
     })
 
     it ('should stop visitor session', async () => {
         const sessionId = await Visitor.startSession({ email: "jackson@mail.com" })
         const stoppedSessionId = await Visitor.stopSession({ email: "jackson@mail.com" })
 
-        
-        expect(sessionId).to.be.equal(stoppedSessionId.toString())
+        expect(sessionId).to.deep.equal(stoppedSessionId)
     })
 
     
