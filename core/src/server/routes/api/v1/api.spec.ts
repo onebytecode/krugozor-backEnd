@@ -138,4 +138,50 @@ describe('Api v1 tests', () => {
             throw new Error(e)
         }
     })
+
+    it ('should get started visit', async () => {
+        const visitor = await Visitor.create({ 
+            fname: 'Boris',
+            email: 'boris@mail.com',
+            phoneNumber: '8-880-808-80-80'
+        })
+        const sessionId = await Visitor.startSession({ _id: visitor._id })
+        await Visitor.entry({ _id: visitor._id })
+
+        try {
+            const queryString = `
+            {
+                getVisit (visitorId: "${visitor._id}") {
+                    startedAt
+                    endedAt
+                    duration {
+                        seconds
+                        minutes
+                        hours
+                    }
+                    visitorId
+                }   
+            }`
+            const {
+                body: {
+                    data: {
+                        getVisit: {
+                            startedAt,
+                            endedAt,
+                            duration,
+                            visitorId
+                        }
+                    }
+                }
+            } = await chai.request('localhost:8080').get('/gql').send({ query: queryString })
+
+            expect(startedAt).to.not.be.undefined 
+            expect(endedAt).to.be.null
+            expect(duration).to.be.a('object')
+            expect(visitorId).to.equal(visitor._id.toString())
+
+        } catch (e) {
+            throw new Error(e);
+        }
+    })
 })

@@ -44,4 +44,18 @@ describe('Visit model tests', () => {
         expect(uVisitor.currentVisit).to.be.undefined 
         expect(uVisitor.visits[0]).to.deep.equal(visit._id)
     })
+
+    it ('should get duration time', async () => {
+        const visitor = await Visitor.create({
+            fname: 'Ivan',
+            email: 'ivan@mail.ru',
+            phoneNumber: '8-880-888-88-88'
+        })
+        await Visit.start({ visitorId: visitor._id })
+        await Visit.stop({ visitorId: visitor._id })
+        const visit = await Visit.find({ visitorId: visitor._id })
+
+        expect(visit.duration).to.be.a('object')
+        expect(visit.duration).to.not.be.undefined
+    })
 })
