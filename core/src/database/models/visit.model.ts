@@ -2,10 +2,16 @@ import * as Mongoose from 'mongoose';
 import { Schema, Document }    from 'mongoose';
 import { Visitor } from './visitor.model';
 
+interface Duration {
+    hours?: number;
+    minutes?: number;
+    seconds?: number;
+}
 export interface IVisitModel extends Document {
     visitorId: Schema.Types.ObjectId;
     startedAt?: Date;
     endedAt?: Date;
+    duration?: Duration
     _id: Schema.Types.ObjectId;
 }
 
@@ -16,11 +22,38 @@ interface IVisitQuery {
 const VisitSchema = new Schema({
     visitorId: { type: Schema.Types.ObjectId, required: true },
     startedAt: { type: Date },
-    endedAt: { type: Date }
+    endedAt: { type: Date },
+    duration: {
+        hours: Number,
+        minutes: Number,
+        seconds: Number
+    }
 })
+
+function calculateDuration(startDate, endDate): Duration {
+    const duration = {
+        hours: 0,
+        minutes: 0,
+        seconds: 0
+    }
+    const sDate = new Date(startDate).getTime();
+    const eDate = new Date(endDate).getTime();
+    const diff  = eDate - sDate;
+    const seconds = diff/1000;
+    const minutes = seconds/60;
+    const hours = minutes/60;
+    duration.seconds = seconds;
+    duration.minutes = minutes;
+    duration.hours = hours;
+
+    return duration;
+}
 
 VisitSchema.pre('save', function(next) {
     if (!this.startedAt) this.startedAt = new Date()
+    if (this.endedAt) {
+        this.duration = calculateDuration(this.startedAt, this.endedAt);
+    }
     next()
 })
 

@@ -9,7 +9,11 @@ import {
     visitorLogOut,
     visitorEntry,
     visitorExit
-} from './gql-models/visitor.gql-model'
+} from './gql-models/visitor.gql-model';
+
+import { 
+    getVisit 
+} from './gql-models/visit.gql-model';
 
 import { 
             GraphQLObjectType, 
@@ -25,7 +29,8 @@ export function Api (): Router {
     const queryType = new GraphQLObjectType({
         name: 'Query',
         fields: {
-            getVisitor
+            getVisitor,
+            getVisit
         }
     })
 

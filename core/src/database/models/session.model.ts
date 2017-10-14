@@ -33,6 +33,7 @@ export class Session {
     public static async find(session: ISessionModel) {
         try {
             const result = await SessionModel.find(session)
+            if (result === null) throw new Error('Session does not exist!');
             return result
         } catch (e) {
             throw new Error(e)

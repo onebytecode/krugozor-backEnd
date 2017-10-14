@@ -15,6 +15,7 @@ const visitorFields = {
     birthdate: { type: GraphQLString },
     email: { type: new GraphQLNonNull(GraphQLString) },
     phoneNumber: { type: new GraphQLNonNull(GraphQLString) },
+    sessionId: { type: GraphQLString },
     password: { type: GraphQLString },
     entryTimestamp: { type: GraphQLString },
     exitTimestamp: { type: GraphQLString },
