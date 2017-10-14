@@ -16,7 +16,7 @@ export interface IVisitorModel extends Document {
     currentVisit?: Schema.Types.ObjectId
     visits?: Array<Schema.Types.ObjectId>
     entryTimestamp?: Date 
-    exitTimestamp?: Date 
+    exitTimestamp?: Date
 }
 
 interface IUpdateVisitorQuery {
@@ -42,14 +42,14 @@ interface IVisitorQuery {
 }
 
 const VisitorSchema = new Schema ({
-    fname: { type: String, required: true },
+    fname: { type: String, required: '{PATH} is required!' },
     lname: String,
     patronymic: String,
     gender: String,
     sessionId: { type: Schema.Types.ObjectId, ref: 'session' },
     birthdate: Date,
     phoneNumber: { type: String, required: true },
-    email: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
     createdAt: { type: Date },
     updatedAt: { type: Date },
     visits: [{ type: Schema.Types.ObjectId, ref: 'visit' }],
@@ -74,6 +74,9 @@ export class Visitor {
             const result = await VisitorModel.create(visitor)
             return result
         } catch (e) {
+            switch (e.code) {
+                case 11000: throw new Error('Visitor already exists!'); 
+            }
             throw new Error(e)
         }
     } 
@@ -81,6 +84,7 @@ export class Visitor {
     public static async find(visitor: IVisitorQuery) : Promise<Document<IVisitorModel>> {
         try {
             const result = await VisitorModel.findOne(visitor)
+            if (result === null) throw new Error('Visitor does not exists!');
             return result 
         } catch (e) {
             throw new Error(e)
@@ -116,7 +120,7 @@ export class Visitor {
     public static async startSession(visitorQuery: IVisitorQuery): Promise<String> {
         try {
             const visitor = await Visitor.find(visitorQuery)
-            if (!visitor) return '0'
+            if (visitor.sessionId) throw new Error('Visitor already have active session!');
             const session = await Session.create({ id: visitor._id })
             visitor.sessionId = session._id 
             await visitor.save()
@@ -130,6 +134,8 @@ export class Visitor {
         try {
             const visitor = await Visitor.find(visitorQuery)
             const session = await Session.delete({ id: visitor._id })
+            visitor.sessionId = undefined;
+            await visitor.save()
             return session._id
         } catch (e) {
             throw new Error(e)
@@ -137,8 +143,12 @@ export class Visitor {
     }
 
     public static async exists(visitorQuery: IVisitorQuery): Promise<boolean> {
-        const visitor = await Visitor.find(visitorQuery)
-        return visitor !== null 
+        try {
+            const visitor = await Visitor.find(visitorQuery)
+            return visitor !== null
+        } catch (e) {
+            return false;
+        }
     }
 
     public static async entry(visitorQuery: IVisitorQuery): Promise<Date> {

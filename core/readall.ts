@@ -69,7 +69,6 @@ export const trimDirname = (arr: Array<FileStorage>, root: string) : Array<FileS
 const compileFiles = (arr: Array<FileStorage>) => {
     arr.forEach(__el => {
         const relFile = __el.path + '/' + __el.name
-        console.log(relFile)
         const nFile = sourceDirname + relFile
         const sFile = distDirname + relFile 
         const rStream = fs.createReadStream(nFile)

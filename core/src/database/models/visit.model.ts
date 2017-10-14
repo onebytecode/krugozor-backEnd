@@ -38,7 +38,7 @@ function calculateDuration(startDate, endDate): Duration {
     }
     const sDate = new Date(startDate).getTime();
     const eDate = new Date(endDate).getTime();
-    const diff  = sDate - eDate;
+    const diff  = eDate - sDate;
     const seconds = diff/1000;
     const minutes = seconds/60;
     const hours = minutes/60;
