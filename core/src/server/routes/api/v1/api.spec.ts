@@ -78,110 +78,51 @@ describe('Api v1 tests', () => {
             })
     })
 
-    it ('should entry visitor', done => {
-        Visitor.create({
-            fname: 'Boris',
-            phoneNumber: '8-880-808-80-80',
-            email: 'boris@mail.com'
-        }).then(visitor => {
-            Visitor.startSession({
-                _id: visitor._id
-            }).then(sessionToken => {
-                const queryString = `
-                mutation {
-                    visitorEntry(sessionToken: "${sessionToken}")   
-                    {
-                        status
-                        entryTimestamp   
-                    }
-                }`
-                chai.request('localhost:8080')
-                    .post('/gql')
-                    .send({
-                        query: queryString
-                    }).end((err, { body: { data: { visitorEntry: { status, entryTimestamp } } } } ) => {
-                        if (err) done(err)
-                        
-                        expect(status).to.equal(true)
-                        expect(entryTimestamp).to.not.be.undefined
-                        done()
-                    })
-            })
-        })
-    })
-
-    it ('should exit visitor', async () => {
-        const visitor = await Visitor.create({ 
-            fname: 'Boris',
-            email: 'boris@mail.com',
-            phoneNumber: '8-880-808-80-80'
-        })
-        const sessionToken = await Visitor.startSession({ _id: visitor._id })
-        await Visitor.entry({ _id: visitor._id })
+    it ('should entry visitor', async function() {
+        await Visitor.create({ fname: 'Boris', email: 'boris@email.com', phoneNumber: '123123123123' })
+        const sessId = await Visitor.startSession({ email: 'boris@email.com'})
         try {
             const queryString = `
             mutation {
-                visitorExit(sessionToken: "${sessionToken}") {
-                    status 
-                    exitTimestamp
-                }   
+               visitorTerminalTrigger(sessionToken: "${sessId}") {
+                   isExit
+                   isEntered
+               } 
             }`
             const result = await chai.request('localhost:8080')
                 .post('/gql')
                 .send({ query: queryString })
+            const { body: { data: { visitorTerminalTrigger: res } }} = result
 
-            const { body: { data: { visitorExit: { status, exitTimestamp } } } } = result
-            
-            expect(status).to.equal(true)
-            expect(exitTimestamp).to.not.be.undefined
+            expect(res.isEntered).to.equal(true)
+            expect(res.isExit).to.equal(false)
         } catch (e) {
             throw new Error(e)
         }
     })
 
-    it ('should get started visit', async () => {
-        const visitor = await Visitor.create({ 
-            fname: 'Boris',
-            email: 'boris@mail.com',
-            phoneNumber: '8-880-808-80-80'
-        })
-        const sessionToken = await Visitor.startSession({ _id: visitor._id })
-        await Visitor.entry({ _id: visitor._id })
-
+    it ('should exit visitor', async function() {
+        await Visitor.create({ fname: 'Boris', email: 'boris@email.com', phoneNumber: '123123123123' })
+        const sessId = await Visitor.startSession({ email: 'boris@email.com'})
+        await Visitor.entry({ sessionToken: sessId })
         try {
             const queryString = `
-            {
-                getVisit (visitorId: "${visitor._id}") {
-                    startedAt
-                    endedAt
-                    duration {
-                        seconds
-                        minutes
-                        hours
-                    }
-                    visitorId
-                }   
+            mutation {
+               visitorTerminalTrigger(sessionToken: "${sessId}") {
+                   isExit
+                   isEntered
+               } 
             }`
-            const {
-                body: {
-                    data: {
-                        getVisit: {
-                            startedAt,
-                            endedAt,
-                            duration,
-                            visitorId
-                        }
-                    }
-                }
-            } = await chai.request('localhost:8080').get('/gql').send({ query: queryString })
+            const result = await chai.request('localhost:8080')
+                .post('/gql')
+                .send({ query: queryString })
+            const { body: { data: { visitorTerminalTrigger: res } }} = result
 
-            expect(startedAt).to.not.be.undefined 
-            expect(endedAt).to.be.null
-            expect(duration).to.be.a('object')
-            expect(visitorId).to.equal(visitor._id.toString())
-
+            expect(res.isEntered).to.equal(false)
+            expect(res.isExit).to.equal(true)
         } catch (e) {
-            throw new Error(e);
+            throw new Error(e)
         }
     })
+
 })

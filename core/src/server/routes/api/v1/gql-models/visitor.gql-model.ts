@@ -114,6 +114,35 @@ export const visitorLogOut = {
     }
 }
 
+export const visitorTerminalTrigger = {
+    type: new GraphQLObjectType({
+        name: 'TerminalTriggerType',
+        fields: {
+            isEntered: { type: new GraphQLNonNull(GraphQLBoolean) },
+            isExit: { type: new GraphQLNonNull(GraphQLBoolean) }
+        }
+    }),
+    args: {
+        sessionToken: { type: new GraphQLNonNull(GraphQLString) }
+    },
+    resolve: async function(_, { sessionToken }) {
+        const visitor = await Visitor.find({ sessionToken })
+        if (visitor.currentVisit) {
+            await Visitor.exit({ sessionToken })
+            return {
+                isEntered: false,
+                isExit: true 
+            }
+        } else {
+            await Visitor.entry({ sessionToken })
+            return {
+                isEntered: true,
+                isExit: false 
+            }
+        }
+    }
+}
+
 export const visitorEntry = {
     type: new GraphQLObjectType({
         name: 'VisitorEntryType',
