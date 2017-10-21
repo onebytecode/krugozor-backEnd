@@ -45,14 +45,14 @@ describe('Visitor model', () => {
         const result = await Visitor.startSession({ email: "jackson@mail.com" })
         const visitor   = await Visitor.find({ email: "jackson@mail.com" })
 
-        expect(visitor.sessionId).to.deep.equal(result)
+        expect(visitor.sessionToken).to.deep.equal(result)
     })
 
     it ('should stop visitor session', async () => {
-        const sessionId = await Visitor.startSession({ email: "jackson@mail.com" })
-        const stoppedSessionId = await Visitor.stopSession({ email: "jackson@mail.com" })
+        const sessionToken = await Visitor.startSession({ email: "jackson@mail.com" })
+        const stoppedsessionToken = await Visitor.stopSession({ email: "jackson@mail.com" })
 
-        expect(sessionId).to.deep.equal(stoppedSessionId)
+        expect(sessionToken).to.deep.equal(stoppedsessionToken)
     })
 
     it ('should get entry timestamp of undefined', async () => {

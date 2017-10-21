@@ -11,7 +11,7 @@ export interface IVisitorModel extends Document {
     birthdate?: Date  
     phoneNumber: String 
     email: String 
-    sessionId?: Schema.Types.ObjectId 
+    sessionToken?: Schema.Types.ObjectId 
     password?: String
     currentVisit?: Schema.Types.ObjectId
     visits?: Array<Schema.Types.ObjectId>
@@ -27,7 +27,7 @@ interface IUpdateVisitorQuery {
     birthdate?: Date  
     phoneNumber?: String 
     email?: String 
-    sessionId?: Schema.Types.ObjectId 
+    sessionToken?: Schema.Types.ObjectId 
     password?: String,
     currentVisit?: Schema.Types.ObjectId
     visits?: Array<Schema.Types.ObjectId>
@@ -38,7 +38,7 @@ interface IUpdateVisitorQuery {
 interface IVisitorQuery {
     _id?: Number  
     email?: String 
-    sessionId?: Schema.Types.ObjectId
+    sessionToken?: Schema.Types.ObjectId
 }
 
 const VisitorSchema = new Schema ({
@@ -46,7 +46,7 @@ const VisitorSchema = new Schema ({
     lname: String,
     patronymic: String,
     gender: String,
-    sessionId: { type: Schema.Types.ObjectId, ref: 'session' },
+    sessionToken: { type: Schema.Types.ObjectId, ref: 'session' },
     birthdate: Date,
     phoneNumber: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -120,9 +120,9 @@ export class Visitor {
     public static async startSession(visitorQuery: IVisitorQuery): Promise<String> {
         try {
             const visitor = await Visitor.find(visitorQuery)
-            if (visitor.sessionId) throw new Error('Visitor already have active session!');
+            if (visitor.sessionToken) throw new Error('Visitor already have active session!');
             const session = await Session.create({ id: visitor._id })
-            visitor.sessionId = session._id 
+            visitor.sessionToken = session._id 
             await visitor.save()
             return session._id
         } catch (e) {
@@ -134,7 +134,7 @@ export class Visitor {
         try {
             const visitor = await Visitor.find(visitorQuery)
             const session = await Session.delete({ id: visitor._id })
-            visitor.sessionId = undefined;
+            visitor.sessionToken = undefined;
             await visitor.save()
             return session._id
         } catch (e) {

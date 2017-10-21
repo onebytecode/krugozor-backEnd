@@ -15,11 +15,22 @@ const visitorFields = {
     birthdate: { type: GraphQLString },
     email: { type: new GraphQLNonNull(GraphQLString) },
     phoneNumber: { type: new GraphQLNonNull(GraphQLString) },
-    sessionId: { type: GraphQLString },
+    sessionToken: { type: GraphQLString },
     password: { type: GraphQLString },
     entryTimestamp: { type: GraphQLString },
     exitTimestamp: { type: GraphQLString },
     id: { type: GraphQLString }
+}
+
+const registerVisitorFields = {
+    fname: { type: new GraphQLNonNull(GraphQLString) },
+    lname: { type: GraphQLString },
+    patronymic: { type: GraphQLString },
+    gender: { type: GraphQLString },
+    birthdate: { type: GraphQLString },
+    email: { type: new GraphQLNonNull(GraphQLString) },
+    phoneNumber: { type: new GraphQLNonNull(GraphQLString) },
+    password: { type: GraphQLString }
 }
 export const visitorModel = new GraphQLObjectType({
     name: 'Visitor',
@@ -30,14 +41,14 @@ export const getVisitor = {
         type: visitorModel,
         args: {
             email: { type: GraphQLString },
-            sessionId: { type: GraphQLString }
+            sessionToken: { type: GraphQLString }
         },
-        resolve: async function(_, { email, sessionId }) {
+        resolve: async function(_, { email, sessionToken }) {
             let result;
             if (email) {
                 result = await Visitor.find({ email })
             } else {
-                result = await Visitor.find({ sessionId })
+                result = await Visitor.find({ sessionToken })
             }
             result['id'] = result._id 
 
@@ -47,7 +58,7 @@ export const getVisitor = {
 
 export const registerNewVisitor = {
     type: visitorModel,
-    args: visitorFields,
+    args: registerVisitorFields,
     resolve: async function(_, visitorParams) {
         const result = await Visitor.create(visitorParams)
         return result 
@@ -75,15 +86,15 @@ export const visitorLogIn = {
     type: new GraphQLObjectType({
         name: 'VisitorLoginType',
         fields: {
-            sessionId: { type: new GraphQLNonNull(GraphQLString) }
+            sessionToken: { type: new GraphQLNonNull(GraphQLString) }
         }
     }),
     args: {
         email: { type: new GraphQLNonNull(GraphQLString) }
     },
     resolve: async function(_, { email }) {
-        const sessionId = await Visitor.startSession({ email })
-        return { sessionId }
+        const sessionToken = await Visitor.startSession({ email })
+        return { sessionToken }
     }
 }
 
@@ -91,15 +102,44 @@ export const visitorLogOut = {
     type: new GraphQLObjectType({
         name: 'VisitorLogOutType',
         fields: { 
-            sessionId: { type: new GraphQLNonNull(GraphQLString) }
+            sessionToken: { type: new GraphQLNonNull(GraphQLString) }
         }
     }),
     args: {
-        email: { type: new GraphQLNonNull(GraphQLString) }
+        sessionToken: { type: new GraphQLNonNull(GraphQLString) }
     },
-    resolve: async function(_, { email }) {
-        const sessionId = await Visitor.stopSession({ email })
-        return { sessionId } 
+    resolve: async function(_, { sessionToken }) {
+        const result = await Visitor.stopSession({ sessionToken })
+        return { sessionToken: result } 
+    }
+}
+
+export const visitorTerminalTrigger = {
+    type: new GraphQLObjectType({
+        name: 'TerminalTriggerType',
+        fields: {
+            isEntered: { type: new GraphQLNonNull(GraphQLBoolean) },
+            isExit: { type: new GraphQLNonNull(GraphQLBoolean) }
+        }
+    }),
+    args: {
+        sessionToken: { type: new GraphQLNonNull(GraphQLString) }
+    },
+    resolve: async function(_, { sessionToken }) {
+        const visitor = await Visitor.find({ sessionToken })
+        if (visitor.currentVisit) {
+            await Visitor.exit({ sessionToken })
+            return {
+                isEntered: false,
+                isExit: true 
+            }
+        } else {
+            await Visitor.entry({ sessionToken })
+            return {
+                isEntered: true,
+                isExit: false 
+            }
+        }
     }
 }
 
@@ -112,11 +152,11 @@ export const visitorEntry = {
         }
     }),
     args: {
-        sessionId: { type: new GraphQLNonNull(GraphQLString) }
+        sessionToken: { type: new GraphQLNonNull(GraphQLString) }
     },
-    resolve: async function(_, { sessionId }) {
+    resolve: async function(_, { sessionToken }) {
         const result  = { status: false, entryTimestamp: undefined }
-        const visitor = await Visitor.find({ sessionId: sessionId })
+        const visitor = await Visitor.find({ sessionToken: sessionToken })
         const date    = await Visitor.entry({ _id: visitor._id })
         if (date) {
             result.status = true
@@ -137,11 +177,11 @@ export const visitorExit = {
         }
     }),
     args: {
-        sessionId: { type: GraphQLString }
+        sessionToken: { type: GraphQLString }
     },
-    resolve: async function(_, { sessionId } ) {
+    resolve: async function(_, { sessionToken } ) {
         const result  = { status: false, exitTimestamp: undefined, price: undefined }
-        const visitor = await Visitor.find({ sessionId: sessionId })
+        const visitor = await Visitor.find({ sessionToken: sessionToken })
         const date    = await Visitor.exit({ _id: visitor._id })
         if (date) {
             result.status = true 

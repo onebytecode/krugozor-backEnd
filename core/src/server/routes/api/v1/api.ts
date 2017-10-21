@@ -7,8 +7,7 @@ import {
     registerNewVisitor,
     visitorLogIn,
     visitorLogOut,
-    visitorEntry,
-    visitorExit
+    visitorTerminalTrigger
 } from './gql-models/visitor.gql-model';
 
 import { 
@@ -40,8 +39,7 @@ export function Api (): Router {
             registerNewVisitor,
             visitorLogIn,
             visitorLogOut,
-            visitorEntry,
-            visitorExit
+            visitorTerminalTrigger
         }
     })
 
