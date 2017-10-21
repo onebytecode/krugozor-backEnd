@@ -86,10 +86,10 @@ describe('Api v1 tests', () => {
         }).then(visitor => {
             Visitor.startSession({
                 _id: visitor._id
-            }).then(sessionId => {
+            }).then(sessionToken => {
                 const queryString = `
                 mutation {
-                    visitorEntry(sessionId: "${sessionId}")   
+                    visitorEntry(sessionToken: "${sessionToken}")   
                     {
                         status
                         entryTimestamp   
@@ -116,12 +116,12 @@ describe('Api v1 tests', () => {
             email: 'boris@mail.com',
             phoneNumber: '8-880-808-80-80'
         })
-        const sessionId = await Visitor.startSession({ _id: visitor._id })
+        const sessionToken = await Visitor.startSession({ _id: visitor._id })
         await Visitor.entry({ _id: visitor._id })
         try {
             const queryString = `
             mutation {
-                visitorExit(sessionId: "${sessionId}") {
+                visitorExit(sessionToken: "${sessionToken}") {
                     status 
                     exitTimestamp
                 }   
@@ -145,7 +145,7 @@ describe('Api v1 tests', () => {
             email: 'boris@mail.com',
             phoneNumber: '8-880-808-80-80'
         })
-        const sessionId = await Visitor.startSession({ _id: visitor._id })
+        const sessionToken = await Visitor.startSession({ _id: visitor._id })
         await Visitor.entry({ _id: visitor._id })
 
         try {
