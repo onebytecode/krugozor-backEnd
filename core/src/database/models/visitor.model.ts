@@ -157,13 +157,13 @@ export class Visitor {
         if (visitor.currentVisit) throw new Error('Visitor already entered!')
         const visit = await Visit.start({ visitorId: visitor._id })
         if (visit === null) throw new Error('Cannot create visit model!')
-        return visit.startedAt 
+        return visit.startDate 
     }
 
     public static async exit(visitorQuery: IVisitorQuery): Promise<Date> {
         const visitor = await Visitor.find(visitorQuery)
         if (!visitor.currentVisit) throw new Error('Visitor does not enter anticafe!')
         const result = await Visit.stop({ visitorId: visitor._id })
-        return result.endedAt
+        return result.endDate
     }
 }

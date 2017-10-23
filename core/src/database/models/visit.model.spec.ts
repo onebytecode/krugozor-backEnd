@@ -22,8 +22,8 @@ describe('Visit model tests', () => {
         const uVisitor = await Visitor.find({ _id: visitor._id })
         
         expect(visit.visitorId).to.be.equal(visitor._id)
-        expect(visit.startedAt).to.not.be.undefined
-        expect(visit.endedAt).to.be.undefined
+        expect(visit.startDate).to.not.be.undefined
+        expect(visit.endDate).to.be.undefined
         expect(uVisitor.currentVisit).to.deep.equal(visit._id)
         expect(uVisitor.visits[0]).to.deep.equal(visit._id)
     })
@@ -39,8 +39,8 @@ describe('Visit model tests', () => {
         const uVisitor = await Visitor.find({ _id: visitor._id })
 
         expect(visit.visitorId).to.deep.equal(visitor._id)
-        expect(visit.startedAt).to.not.be.undefined
-        expect(visit.endedAt).to.not.be.undefined 
+        expect(visit.startDate).to.not.be.undefined
+        expect(visit.endDate).to.not.be.undefined 
         expect(uVisitor.currentVisit).to.be.undefined 
         expect(uVisitor.visits[0]).to.deep.equal(visit._id)
     })
@@ -55,7 +55,7 @@ describe('Visit model tests', () => {
         await Visit.stop({ visitorId: visitor._id })
         const visit = await Visit.find({ visitorId: visitor._id })
 
-        expect(visit.duration).to.be.a('object')
+        expect(visit.duration).to.be.a('number')
         expect(visit.duration).to.not.be.undefined
     })
 })

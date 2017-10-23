@@ -19,7 +19,7 @@ const visitFields = {
     visitorId: { type: GraphQLString },
     startedAt: { type: GraphQLString },
     endedAt: { type: GraphQLString },
-    duration: { type: durationObject}
+    duration: { type: GraphQLString }
 }
 
 export const VisitModel = new GraphQLObjectType({

@@ -2,16 +2,12 @@ import * as Mongoose from 'mongoose';
 import { Schema, Document }    from 'mongoose';
 import { Visitor } from './visitor.model';
 
-interface Duration {
-    hours?: number;
-    minutes?: number;
-    seconds?: number;
-}
+
 export interface IVisitModel extends Document {
     visitorId: Schema.Types.ObjectId;
-    startedAt?: Date;
-    endedAt?: Date;
-    duration?: Duration
+    startDate: Date;
+    endDate?: Date;
+    duration?: number
     _id: Schema.Types.ObjectId;
 }
 
@@ -21,38 +17,21 @@ interface IVisitQuery {
 
 const VisitSchema = new Schema({
     visitorId: { type: Schema.Types.ObjectId, required: true },
-    startedAt: { type: Date },
-    endedAt: { type: Date },
-    duration: {
-        hours: Number,
-        minutes: Number,
-        seconds: Number
-    }
+    startDate: { type: Date },
+    endDate: { type: Date },
+    duration: Number
 })
 
-function calculateDuration(startDate, endDate): Duration {
-    const duration = {
-        hours: 0,
-        minutes: 0,
-        seconds: 0
-    }
-    const sDate = new Date(startDate).getTime();
-    const eDate = new Date(endDate).getTime();
-    const diff  = eDate - sDate;
-    const seconds = diff/1000;
-    const minutes = seconds/60;
-    const hours = minutes/60;
-    duration.seconds = seconds;
-    duration.minutes = minutes;
-    duration.hours = hours;
+function calculateDuration(startDate, endDate): number {
+    const duration = ((endDate.getTime() - startDate.getTime()) / 1000 ) / 60
 
     return duration;
 }
 
 VisitSchema.pre('save', function(next) {
-    if (!this.startedAt) this.startedAt = new Date()
-    if (this.endedAt) {
-        this.duration = calculateDuration(this.startedAt, this.endedAt);
+    if (!this.startDate) this.startDate = new Date()
+    if (this.endDate) {
+        this.duration = calculateDuration(this.startDate, this.endDate);
     }
     next()
 })
@@ -73,7 +52,7 @@ export class Visit {
         const visit = await VisitModel.create({ visitorId: query.visitorId })
         
         visitor.currentVisit = visit._id 
-        visitor.entryTimestamp = visit.startedAt
+        visitor.entryTimestamp = visit.startDate
         visitor.visits.push(visit._id)
         await visitor.save()
 
@@ -82,11 +61,11 @@ export class Visit {
 
     public static async stop(query: IVisitQuery): Promise<IVisitModel> {
         const visit   = await VisitModel.findOne({ visitorId: query.visitorId })
-        visit.endedAt = new Date()
+        visit.endDate = new Date()
         const result  = await visit.save()
 
         const visitor = await Visitor.find({ _id: query.visitorId })
-        visitor.exitTimestamp = visit.endedAt
+        visitor.exitTimestamp = visit.endDate
         visitor.currentVisit  = undefined
         await visitor.save()
 
