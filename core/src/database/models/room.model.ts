@@ -9,21 +9,19 @@ interface RoomSchemaInterface {
     name: String
     description: String
     photos?: Array<String>
-    prices?: PriceInterface
+    prices?: Array<PriceInterface>
 }
-const roomSchema = {
+const roomSchema = new Schema({
     name: { type: String, required: true, unique: true },
     description: { type: String, required: true },
     photos: [{ type: String }],
     prices: [
         {
-            type: {
-                isFixed: { type: Boolean, required: true },
-                price: { type: Number, required: true }
-            }
+            isFixed: { type: Boolean, required: true },
+            price: { type: Number, required: true }
         }
     ]
-}
+})
 
 const RoomModel = Mongoose.model('room', roomSchema)
 
@@ -33,7 +31,20 @@ export class Room {
         return result 
     }
 
-    public static async find() {
+    public static async find(_id: Schema.Types.ObjectId) {
+        const result = await RoomModel.findOne({ _id });
+        return result;
+    }
 
+    public static async update(_id: Schema.Types.ObjectId, params: RoomSchemaInterface) {
+        const result = await RoomModel.findOneAndUpdate({ _id }, params, {
+            passRawResult: true
+        });
+        return result;
+    }
+
+    public static async getAll() {
+        const result = await RoomModel.find();
+        return result;
     }
 }

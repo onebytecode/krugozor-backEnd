@@ -37,8 +37,8 @@ interface IUpdateVisitorQuery {
 
 interface IVisitorQuery {
     _id?: Number  
-    email?: String 
-    sessionToken?: Schema.Types.ObjectId
+    email?: string 
+    sessionToken?: string
 }
 
 const VisitorSchema = new Schema ({
@@ -65,14 +65,14 @@ VisitorSchema.pre('save', function(next) {
 })
 
 
-export const VisitorModel = Mongoose.model<IVisitorModel>('visitor', VisitorSchema)
+export const VisitorModel = Mongoose.model('visitor', VisitorSchema)
 
 export class Visitor {
 
-    public static async create(visitor: IVisitorModel): Promise<Document<IVisitorModel>> {
+    public static async create(visitor: IUpdateVisitorQuery): Promise<IVisitorModel> {
         try {
             const result = await VisitorModel.create(visitor)
-            return result
+            return <IVisitorModel>result
         } catch (e) {
             switch (e.code) {
                 case 11000: throw new Error('Visitor already exists!'); 
@@ -81,11 +81,11 @@ export class Visitor {
         }
     } 
 
-    public static async find(visitor: IVisitorQuery) : Promise<Document<IVisitorModel>> {
+    public static async find(visitor: IVisitorQuery) : Promise<IVisitorModel> {
         try {
             const result = await VisitorModel.findOne(visitor)
             if (result === null) throw new Error('Visitor does not exists!');
-            return result 
+            return <IVisitorModel>result 
         } catch (e) {
             throw new Error(e)
         }
@@ -107,10 +107,10 @@ export class Visitor {
         }
     }
 
-    public static async delete(visitor: IVisitorModel): Promise<Document<IVisitorModel>> {
+    public static async delete(visitor: IVisitorModel): Promise<IVisitorModel> {
         try {
-            const result = VisitorModel.findOneAndRemove(visitor)
-            return result 
+            const result = await VisitorModel.findOneAndRemove(visitor)
+            return <IVisitorModel>result 
         } catch (e) {
             throw new Error(e)
         }

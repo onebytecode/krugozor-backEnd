@@ -8,8 +8,12 @@ describe('Database', () => {
     })
 
     it ('should get mongoose with connection to test database', async () => {
-        const db = new Database('test')
-        const result = await db.getMongoose()
-        expect(result.connections[0].host).to.be.not.null
+        try {
+            const db = new Database('test')
+            const result = await db.getMongoose()
+            expect(result.connection).to.be.not.null
+        } catch (e) {
+            throw new Error(e);
+        } 
     })
 })

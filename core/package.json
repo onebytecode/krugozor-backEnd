@@ -7,6 +7,7 @@
     "test": "NODE_ENV=test mocha --timeout 10000 -r ts-node/register src/main.spec.ts",
     "test:win": "set NODE_ENV=test && mocha --timeout 10000 -r ts-node/register src/main.spec.ts",
     "test:win:helpers": "set NODE_ENV=test && mocha --timeout 10000 -r ts-node/register src/helpers/helpers.spec.ts",
+    "test:win:models": "set NODE_ENV=test && mocha --timeout 10000 -r ts-node/register src/database/models/models.spec.ts",
     "start:prod": "NODE_ENV=production node dist",
     "start": "nodemon dist",
     "prestart": "tsc -p tsconfig.json && ts-node readall.ts",
@@ -17,7 +18,9 @@
   "devDependencies": {
     "@types/chai": "^4.0.4",
     "@types/chai-http": "^3.0.3",
+    "@types/graphql": "^0.11.5",
     "@types/mocha": "^2.2.43",
+    "@types/mongoose": "^4.7.24",
     "@types/node": "^8.0.31",
     "chai": "^4.1.2",
     "chai-http": "^3.0.0",
