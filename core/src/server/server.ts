@@ -29,8 +29,8 @@ export class Server {
     run(): Promise<Boolean> {
         return new Promise((resolve, reject) => {
             this.app.listen(this.port, () => {
+                if (this.env !== 'test') console.log(color.cyan(`App listen on ::${this.port}::`))
                 resolve(true)
-                if (this.env !== 'test' ) console.log(color.cyan(`App listen on ::${this.port}::`))
             })
         })
     }

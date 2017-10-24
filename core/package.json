@@ -6,8 +6,9 @@
   "scripts": {
     "test": "NODE_ENV=test mocha --timeout 10000 -r ts-node/register src/main.spec.ts",
     "test:win": "set NODE_ENV=test && mocha --timeout 10000 -r ts-node/register src/main.spec.ts",
-    "test:win:helpers": "set NODE_ENV=test && mocha --timeout 10000 -r ts-node/register src/helpers/helpers.spec.ts",
-    "test:win:models": "set NODE_ENV=test && mocha --timeout 10000 -r ts-node/register src/database/models/models.spec.ts",
+    "test:win:helpers": "set NODE_ENV='test' && mocha --timeout 10000 -r ts-node/register src/helpers/helpers.spec.ts",
+    "test:win:models": "set NODE_ENV='test' && mocha --timeout 10000 -r ts-node/register src/database/models/models.spec.ts",
+    "test:win:api:v1": "set NODE_ENV='test' && mocha --timeout 10000 -r ts-node/register src/server/routes/api/v1/api.spec.ts",
     "start:prod": "NODE_ENV=production node dist",
     "start": "nodemon dist",
     "prestart": "tsc -p tsconfig.json && ts-node readall.ts",

@@ -20,6 +20,8 @@ describe('Room model', () => {
             const rooms = await Room.getAll();
     
             expect(rooms.length).to.equal(3);
+            expect(rooms[0].name).to.equal('White');
+            expect(rooms[0].description).to.equal('In the white room...');
         } catch (e) {
             throw new Error(e);
         }

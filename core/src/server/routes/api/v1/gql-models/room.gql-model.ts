@@ -33,6 +33,7 @@ export const getAllRooms = {
     type: new GraphQLList(roomType),
     args: {},
     resolve: async function() {
-        const rooms = await Room.find
+        const rooms = await Room.getAll();
+        return rooms;
     }
 }
