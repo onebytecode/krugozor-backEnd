@@ -7,6 +7,7 @@ import { assert, expect } from 'chai';
 import { Server } from '../../../server';
 import { Visitor } from '../../../../database/models/visitor.model'
 import { Database } from '../../../../database/database';
+import * as Mongoose from 'mongoose';
 
 
 describe('Api v1 tests', () => {
@@ -21,7 +22,7 @@ describe('Api v1 tests', () => {
 
     afterEach(async () => {
         await mongoInterlude.clearDb({
-            mongoose: this.mongoose,
+            mongoose: Mongoose,
             silent: true 
         })
     })

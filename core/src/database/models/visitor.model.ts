@@ -4,15 +4,15 @@ import { Session } from './session.model';
 import { Visit } from './visit.model';
 
 export interface IVisitorModel extends Document {
-    fname: String
-    lname?: String
-    patronymic?: String
-    gender?: String 
+    fname: string
+    lname?: string
+    patronymic?: string
+    gender?: string 
     birthdate?: Date  
-    phoneNumber: String 
-    email: String 
+    phoneNumber: string 
+    email: string 
     sessionToken?: Schema.Types.ObjectId 
-    password?: String
+    password?: string
     currentVisit?: Schema.Types.ObjectId
     visits?: Array<Schema.Types.ObjectId>
     entryTimestamp?: Date 
@@ -20,15 +20,15 @@ export interface IVisitorModel extends Document {
 }
 
 interface IUpdateVisitorQuery {
-    fname?: String
-    lname?: String
-    patronymic?: String
-    gender?: String 
+    fname?: string
+    lname?: string
+    patronymic?: string
+    gender?: string 
     birthdate?: Date  
-    phoneNumber?: String 
-    email?: String 
+    phoneNumber?: string 
+    email?: string 
     sessionToken?: Schema.Types.ObjectId 
-    password?: String,
+    password?: string,
     currentVisit?: Schema.Types.ObjectId
     visits?: Array<Schema.Types.ObjectId>
     entryTimestamp?: Date 
@@ -117,7 +117,7 @@ export class Visitor {
     }
 
     // it returns session ID
-    public static async startSession(visitorQuery: IVisitorQuery): Promise<String> {
+    public static async startSession(visitorQuery: IVisitorQuery): Promise<string> {
         try {
             const visitor = await Visitor.find(visitorQuery)
             if (visitor.sessionToken) throw new Error('Visitor already have active session!');
@@ -130,7 +130,7 @@ export class Visitor {
         }
     }
 
-    public static async stopSession(visitorQuery: IVisitorQuery): Promise<String> {
+    public static async stopSession(visitorQuery: IVisitorQuery): Promise<string> {
         try {
             const visitor = await Visitor.find(visitorQuery)
             const session = await Session.delete({ id: visitor._id })
