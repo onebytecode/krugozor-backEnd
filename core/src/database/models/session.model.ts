@@ -18,7 +18,7 @@ SessionSchema.pre('save', function(next) {
     next()
 })
 
-export const SessionModel = Mongoose.model<ISessionModel>('session', SessionSchema)
+export const SessionModel = Mongoose.model('session', SessionSchema)
 
 export class Session {
     public static async create(session: ISessionModel) {

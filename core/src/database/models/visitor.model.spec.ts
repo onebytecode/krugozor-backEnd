@@ -2,15 +2,13 @@ import 'mocha'
 import * as Mongoose from 'mongoose'
 import { expect } from 'chai'
 import { clearDb } from 'mongo-interlude'
-
-const dbUri: string = require('../config').uri.test 
+import { config } from '../config';
 
 import { Visitor, IVisitorModel } from './visitor.model'
 import { Visit } from './visit.model';
 
 describe('Visitor model', () => {
     beforeEach( async () => {
-        if (!Mongoose.connections[0].host) await Mongoose.connect(dbUri)
         await Visitor.create({
             fname: "Michael",
             lname: "Jackson",

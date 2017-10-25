@@ -1,11 +1,9 @@
-import { expect } from 'chai'
+import { expect } from 'chai';
 import { TotalPriceCounter } from './total-price.counter';
 import { PriceInterface } from '../../database/models/room.model';
 
-describe ('Total price counter tests', () => {
-
-    it ('1 hour; 250 p/h; expect total === 250', done => {
-        const fakeMinutes = 1
+describe('Total price counter tests', () => {
+    it ('should get price for 5 minutes', function(done) {
         const fakeMaxPrice = 650
         const fakePriceObj: Array<PriceInterface> = [
             {
@@ -13,84 +11,37 @@ describe ('Total price counter tests', () => {
                 price: 250
             }
         ]
-        const total = TotalPriceCounter.countTotalPrice(
-            fakePriceObj,
-            fakeMinutes,
-            fakeMaxPrice
-        )
-        expect(total).to.equal(250)
-        done()
+        const fakeStartDate = new Date('2017-01-01T14:30')
+        const fakeEndDate   = new Date('2017-01-01T14:35')
+
+        const result = TotalPriceCounter.countPrice(fakePriceObj, fakeStartDate, fakeEndDate, fakeMaxPrice);
+
+        expect(result).to.equal(250);
+        done();
     })
 
-    it ('fakeMinutes > prices', done => {
-        const fakeMinutes = 2.55
-        const fakeMaxPrice = 700
+    it('should get price for 3 hours 43 minutes', function(done) {
+        const fakeMaxPrice = 1000
         const fakePriceObj: Array<PriceInterface> = [
             {
                 isFixed: true,
                 price: 250
-            },
-            {
-                isFixed: false,
-                price: 2.5
-            }
-        ]
-        const total = TotalPriceCounter.countTotalPrice(
-            fakePriceObj,
-            fakeMinutes,
-            fakeMaxPrice
-        )
-        expect(total).to.equal(400)
-        done()
-    })
-
-    it ('total > maxPrice;', done => {
-        const fakeMinutes = 1.55
-        const fakeMaxPrice = 700
-        const fakePriceObj: Array<PriceInterface> = [
-            {
-                isFixed: true,
-                price: 550
             },
             {
                 isFixed: false,
                 price: 5
+            }, {
+                isFixed: false,
+                price: 3
             }
         ]
-        const total = TotalPriceCounter.countTotalPrice(
-            fakePriceObj,
-            fakeMinutes,
-            fakeMaxPrice
-        )
+        const fakeStartDate = new Date('2017-01-01T14:30')
+        const fakeEndDate   = new Date('2017-01-01T17:43')
 
-        expect(total).to.equal(fakeMaxPrice)
-        done()
-    })
+        const result = TotalPriceCounter.countPrice(fakePriceObj, fakeStartDate, fakeEndDate, fakeMaxPrice);
 
-    it ('diff != 60', done => {
-        const fakeMinutes = 2.55
-        const fakeMaxPrice = 700
-        const fakePriceObj: Array<PriceInterface> = [
-            {
-                isFixed: true,
-                price: 250
-            },
-            {
-                isFixed: false,
-                price: 2.5
-            },
-            {
-                isFixed: false,
-                price: 1.5
-            }
-        ]
-        const total = TotalPriceCounter.countTotalPrice(
-            fakePriceObj,
-            fakeMinutes,
-            fakeMaxPrice
-        )
+        expect(result).to.equal(730);
 
-        expect(total).to.equal(482.5)
         done()
     })
 })

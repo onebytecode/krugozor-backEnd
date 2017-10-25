@@ -8,20 +8,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Mongoose = require("mongoose");
-const config = require('./config.json');
-Mongoose.Promise = Promise;
+const _Mongoose = require("mongoose");
+const mongoose_1 = require("mongoose");
+const config_1 = require("./config");
+_Mongoose.Promise = Promise;
 class Database {
     constructor(env) {
-        this.mongoose = Mongoose;
+        this.mongoose = new mongoose_1.Mongoose();
         this.ENV = env;
         this.uri = this.getUri();
     }
     getUri() {
         switch (this.ENV) {
-            case 'test': return config.uri.test;
-            case 'dev': return config.uri.dev;
-            case 'production': return config.uri.production;
+            case 'test': return config_1.config.uri.test;
+            case 'dev': return config_1.config.uri.dev;
+            case 'production': return config_1.config.uri.production;
         }
     }
     connect() {
@@ -31,8 +32,10 @@ class Database {
     }
     getMongoose() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.mongoose.connections[0].host)
+            if (this.mongoose.connection.readyState === 1)
                 return this.mongoose;
+            if (this.mongoose.connection.readyState === 2)
+                return;
             yield this.connect();
             return this.mongoose;
         });

@@ -1,33 +1,27 @@
+import { PriceCounter } from './price.counter';
+import { TimeTransformHelper } from '../time-transform.helper';
 import { PriceInterface } from '../../database/models/room.model';
 
 export class TotalPriceCounter {
+    public static countPrice(
+        prices: Array<PriceInterface>,
+        startDate: Date,
+        endDate: Date,
+        maxPrice: number
+    ): number {
+        const minutes = this.getMinutes(startDate, endDate);
+        const adaptiveMinutes = TimeTransformHelper.fromMinutesToAdaptiveMinutes(minutes);
+        const price = PriceCounter.countPrice(prices, adaptiveMinutes, maxPrice);
 
-    static countTotalPrice(
-        prices: Array<PriceInterface>, 
-        minutes: number,
-        maxPrice: number): number {
-        let total = 0;
-        for (let i = 0; i < minutes; i++) {
-            const diff = Math.abs(minutes - i);
-            const priceObj = prices[i];
-            if (!priceObj) break;
-            if (diff < 1) {
-                const minsDiff = diff * 100;
-                if (priceObj.isFixed) {
-                    total += priceObj.price;
-                } else {
-                    total += priceObj.price*minsDiff; 
-                }
-            } else {
-                if (priceObj.isFixed) {
-                    total += priceObj.price;
-                } else {
-                    total += priceObj.price*60; 
-                }
-            }
-        }
+        return price;
+    }
 
-        if (total > maxPrice) return maxPrice;
-        return total;
+    private static getMinutes(startDate: Date, endDate: Date): number {
+        const startTime = startDate.getTime();
+        const endTime = endDate.getTime();
+        const seconds = (endTime - startTime) / 1000;
+        const minutes = seconds / 60;
+        
+        return minutes;
     }
 }

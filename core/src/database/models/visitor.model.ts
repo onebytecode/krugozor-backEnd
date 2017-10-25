@@ -4,15 +4,15 @@ import { Session } from './session.model';
 import { Visit } from './visit.model';
 
 export interface IVisitorModel extends Document {
-    fname: String
-    lname?: String
-    patronymic?: String
-    gender?: String 
+    fname: string
+    lname?: string
+    patronymic?: string
+    gender?: string 
     birthdate?: Date  
-    phoneNumber: String 
-    email: String 
+    phoneNumber: string 
+    email: string 
     sessionToken?: Schema.Types.ObjectId 
-    password?: String
+    password?: string
     currentVisit?: Schema.Types.ObjectId
     visits?: Array<Schema.Types.ObjectId>
     entryTimestamp?: Date 
@@ -20,15 +20,15 @@ export interface IVisitorModel extends Document {
 }
 
 interface IUpdateVisitorQuery {
-    fname?: String
-    lname?: String
-    patronymic?: String
-    gender?: String 
+    fname?: string
+    lname?: string
+    patronymic?: string
+    gender?: string 
     birthdate?: Date  
-    phoneNumber?: String 
-    email?: String 
+    phoneNumber?: string 
+    email?: string 
     sessionToken?: Schema.Types.ObjectId 
-    password?: String,
+    password?: string,
     currentVisit?: Schema.Types.ObjectId
     visits?: Array<Schema.Types.ObjectId>
     entryTimestamp?: Date 
@@ -37,8 +37,8 @@ interface IUpdateVisitorQuery {
 
 interface IVisitorQuery {
     _id?: Number  
-    email?: String 
-    sessionToken?: Schema.Types.ObjectId
+    email?: string 
+    sessionToken?: string
 }
 
 const VisitorSchema = new Schema ({
@@ -65,14 +65,14 @@ VisitorSchema.pre('save', function(next) {
 })
 
 
-export const VisitorModel = Mongoose.model<IVisitorModel>('visitor', VisitorSchema)
+export const VisitorModel = Mongoose.model('visitor', VisitorSchema)
 
 export class Visitor {
 
-    public static async create(visitor: IVisitorModel): Promise<Document<IVisitorModel>> {
+    public static async create(visitor: IUpdateVisitorQuery): Promise<IVisitorModel> {
         try {
             const result = await VisitorModel.create(visitor)
-            return result
+            return <IVisitorModel>result
         } catch (e) {
             switch (e.code) {
                 case 11000: throw new Error('Visitor already exists!'); 
@@ -81,11 +81,11 @@ export class Visitor {
         }
     } 
 
-    public static async find(visitor: IVisitorQuery) : Promise<Document<IVisitorModel>> {
+    public static async find(visitor: IVisitorQuery) : Promise<IVisitorModel> {
         try {
             const result = await VisitorModel.findOne(visitor)
             if (result === null) throw new Error('Visitor does not exists!');
-            return result 
+            return <IVisitorModel>result 
         } catch (e) {
             throw new Error(e)
         }
@@ -107,17 +107,17 @@ export class Visitor {
         }
     }
 
-    public static async delete(visitor: IVisitorModel): Promise<Document<IVisitorModel>> {
+    public static async delete(visitor: IVisitorModel): Promise<IVisitorModel> {
         try {
-            const result = VisitorModel.findOneAndRemove(visitor)
-            return result 
+            const result = await VisitorModel.findOneAndRemove(visitor)
+            return <IVisitorModel>result 
         } catch (e) {
             throw new Error(e)
         }
     }
 
     // it returns session ID
-    public static async startSession(visitorQuery: IVisitorQuery): Promise<String> {
+    public static async startSession(visitorQuery: IVisitorQuery): Promise<string> {
         try {
             const visitor = await Visitor.find(visitorQuery)
             if (visitor.sessionToken) throw new Error('Visitor already have active session!');
@@ -130,7 +130,7 @@ export class Visitor {
         }
     }
 
-    public static async stopSession(visitorQuery: IVisitorQuery): Promise<String> {
+    public static async stopSession(visitorQuery: IVisitorQuery): Promise<string> {
         try {
             const visitor = await Visitor.find(visitorQuery)
             const session = await Session.delete({ id: visitor._id })
@@ -157,13 +157,13 @@ export class Visitor {
         if (visitor.currentVisit) throw new Error('Visitor already entered!')
         const visit = await Visit.start({ visitorId: visitor._id })
         if (visit === null) throw new Error('Cannot create visit model!')
-        return visit.startedAt 
+        return visit.startDate 
     }
 
     public static async exit(visitorQuery: IVisitorQuery): Promise<Date> {
         const visitor = await Visitor.find(visitorQuery)
         if (!visitor.currentVisit) throw new Error('Visitor does not enter anticafe!')
         const result = await Visit.stop({ visitorId: visitor._id })
-        return result.endedAt
+        return result.endDate
     }
 }

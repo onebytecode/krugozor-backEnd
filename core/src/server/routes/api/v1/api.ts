@@ -14,6 +14,8 @@ import {
     getVisit 
 } from './gql-models/visit.gql-model';
 
+import { getAllRooms } from './gql-models/room.gql-model';
+
 import { 
             GraphQLObjectType, 
             GraphQLSchema,
@@ -29,7 +31,8 @@ export function Api (): Router {
         name: 'Query',
         fields: {
             getVisitor,
-            getVisit
+            getVisit,
+            getAllRooms
         }
     })
 

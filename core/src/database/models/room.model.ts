@@ -5,35 +5,54 @@ export interface PriceInterface {
     isFixed: boolean
     price: number 
 }
-interface RoomSchemaInterface {
+interface RoomSchemaInterface extends Document {
     name: String
     description: String
     photos?: Array<String>
-    prices?: PriceInterface
+    prices?: Array<PriceInterface>
 }
-const roomSchema = {
+
+interface RoomParams {
+    name: String
+    description: String
+    photos?: Array<String>
+    prices?: Array<PriceInterface>
+}
+
+const roomSchema = new Schema({
     name: { type: String, required: true, unique: true },
     description: { type: String, required: true },
     photos: [{ type: String }],
     prices: [
         {
-            type: {
-                isFixed: { type: Boolean, required: true },
-                price: { type: Number, required: true }
-            }
+            isFixed: { type: Boolean, required: true },
+            price: { type: Number, required: true }
         }
     ]
-}
+})
 
 const RoomModel = Mongoose.model('room', roomSchema)
 
 export class Room {
-    public static async create(params: RoomSchemaInterface) {
+    public static async create(params: RoomParams): Promise<RoomSchemaInterface> {
         const result = await RoomModel.create(params)
-        return result 
+        return <RoomSchemaInterface>result 
     }
 
-    public static async find() {
+    public static async find(_id: Schema.Types.ObjectId) {
+        const result = await RoomModel.findOne({ _id });
+        return result;
+    }
 
+    public static async update(_id: Schema.Types.ObjectId, params: RoomSchemaInterface) {
+        const result = await RoomModel.findOneAndUpdate({ _id }, params, {
+            passRawResult: true
+        });
+        return result;
+    }
+
+    public static async getAll(): Promise<Array<RoomSchemaInterface>> {
+        const result = await RoomModel.find();
+        return <Array<RoomSchemaInterface>>result;
     }
 }
