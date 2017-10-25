@@ -26,4 +26,14 @@ describe('Room model', () => {
             throw new Error(e);
         }
     })
+
+    it ('should get 0 rooms', async () => {
+        try {
+            const result = await Room.getAll();
+
+            expect(result).to.be.an('array').with.lengthOf(0);
+        } catch (e) {
+            throw new Error(e);
+        } 
+    })
 })

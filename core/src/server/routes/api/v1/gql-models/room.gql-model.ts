@@ -18,7 +18,7 @@ const priceObject = new GraphQLObjectType({
 })
 
 const roomFields = {
-    name: { type: new GraphQLNonNull(GraphQLString) },
+    name: { type: GraphQLString },
     description: { type: GraphQLString },
     photos: { type: new GraphQLList(GraphQLString) },
     prices: { type: new GraphQLList(priceObject) }
@@ -31,7 +31,6 @@ const roomType = new GraphQLObjectType({
 
 export const getAllRooms = {
     type: new GraphQLList(roomType),
-    args: {},
     resolve: async function() {
         const rooms = await Room.getAll();
         return rooms;

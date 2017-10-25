@@ -6,7 +6,11 @@
         "pretty": true,
         "outDir": "./dist",
         "removeComments": true,
-        "allowJs": true
+        "allowJs": true,
+        "lib": [
+            "esnext.asynciterable",
+            "es6"
+        ]
     },
     "include": [
         "./src/**/*.ts",

@@ -4,19 +4,11 @@ chai.use(chaiHttp)
 import * as mongoInterlude from 'mongo-interlude'
 
 import { assert, expect } from 'chai';
-import { Server } from '../../../../server';
 import { Visitor } from '../../../../../database/models/visitor.model'
 import { Database } from '../../../../../database/database';
 import * as Mongoose from 'mongoose';
 
 describe('Visitor gql model', () => {
-    before(async () => {
-        this.server = new Server(8080);
-        await this.server.run()
-        this.server.assignDefaultRoutes()
-        this.db = new Database('test')
-        await this.db.getMongoose()
-    })
 
     afterEach(async () => {
         await mongoInterlude.clearDb({

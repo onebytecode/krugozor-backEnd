@@ -27,8 +27,8 @@ export class Database {
     }
 
     async getMongoose (): Promise<Mongoose> {
-        if (this.mongoose.connection.readyState === 1) return this.mongoose 
-        if (this.mongoose.connection.readyState === 2) return
+        if (this.mongoose.connection.readyState === 1) return this.mongoose // Connected
+        if (this.mongoose.connection.readyState === 2) return // Connecting
         await this.connect()
         return this.mongoose 
     }
