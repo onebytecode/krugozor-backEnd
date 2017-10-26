@@ -1,16 +1,13 @@
-import * as _Mongoose from 'mongoose'
-import { Mongoose } from 'mongoose';
+import * as Mongoose from 'mongoose'
 import { config } from './config';
-(<any>_Mongoose).Promise = Promise;
+(<any>Mongoose).Promise = Promise;
 
 export class Database {
-    mongoose: Mongoose 
     private uri: string;
     private ENV: String
     private static instance: Database;
 
     private constructor (env: String) {
-        this.mongoose = new Mongoose()
         this.ENV      = env
         this.uri      = this.getUri()
     }
@@ -30,14 +27,14 @@ export class Database {
         return instance;
     }
 
-    private async connect() {
-        await this.mongoose.connect(this.uri)
+    async connect() {
+        await Mongoose.connect(this.uri);
     }
 
-    async getMongoose (): Promise<Mongoose> {
-        if (this.mongoose.connection.readyState === 1) return this.mongoose // Connected
+    async getMongoose () {
+        if (Mongoose.connection.readyState === 1) return Mongoose // Connected
         
         await this.connect()
-        return this.mongoose 
+        return Mongoose;
     }
 }

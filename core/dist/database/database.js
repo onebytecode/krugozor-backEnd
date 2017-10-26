@@ -8,13 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const _Mongoose = require("mongoose");
-const mongoose_1 = require("mongoose");
+const Mongoose = require("mongoose");
 const config_1 = require("./config");
-_Mongoose.Promise = Promise;
+Mongoose.Promise = Promise;
 class Database {
     constructor(env) {
-        this.mongoose = new mongoose_1.Mongoose();
         this.ENV = env;
         this.uri = this.getUri();
     }
@@ -34,15 +32,15 @@ class Database {
     }
     connect() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.mongoose.connect(this.uri);
+            yield Mongoose.connect(this.uri);
         });
     }
     getMongoose() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.mongoose.connection.readyState === 1)
-                return this.mongoose;
+            if (Mongoose.connection.readyState === 1)
+                return Mongoose;
             yield this.connect();
-            return this.mongoose;
+            return Mongoose;
         });
     }
 }

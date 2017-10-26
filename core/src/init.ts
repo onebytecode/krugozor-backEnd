@@ -10,6 +10,7 @@ export default async function () {
     const server: Server = new Server(8080)
     const db: Database   = Database.getInstance(ENV);
 
+    await db.connect()
     server.assignMorgan()
     server.assignDefaultRoutes()
     db.getMongoose()

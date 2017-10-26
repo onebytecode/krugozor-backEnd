@@ -16,6 +16,7 @@ function default_1() {
         console.log('Init applicaction');
         const server = new server_1.Server(8080);
         const db = database_1.Database.getInstance(ENV);
+        yield db.connect();
         server.assignMorgan();
         server.assignDefaultRoutes();
         db.getMongoose()
