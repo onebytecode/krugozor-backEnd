@@ -25,6 +25,13 @@ class Database {
             case 'production': return config_1.config.uri.production;
         }
     }
+    static getInstance(env) {
+        if (this.instance)
+            return this.instance;
+        const instance = new Database(env);
+        this.instance = instance;
+        return instance;
+    }
     connect() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.mongoose.connect(this.uri);
@@ -34,8 +41,6 @@ class Database {
         return __awaiter(this, void 0, void 0, function* () {
             if (this.mongoose.connection.readyState === 1)
                 return this.mongoose;
-            if (this.mongoose.connection.readyState === 2)
-                return;
             yield this.connect();
             return this.mongoose;
         });

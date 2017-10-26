@@ -9,6 +9,12 @@ function Routes() {
         res.send('Very welcome to Anticafe API!');
     });
     router.use('/gql', api_1.Api());
+    router.route('/*')
+        .get((req, res) => {
+        res.sendStatus(400);
+    }).post((req, res) => {
+        res.sendStatus(400);
+    });
     return router;
 }
 exports.Routes = Routes;

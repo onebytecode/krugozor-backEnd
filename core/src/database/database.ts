@@ -4,11 +4,12 @@ import { config } from './config';
 (<any>_Mongoose).Promise = Promise;
 
 export class Database {
-    private mongoose: Mongoose 
+    mongoose: Mongoose 
     private uri: string;
     private ENV: String
+    private static instance: Database;
 
-    constructor (env: String) {
+    private constructor (env: String) {
         this.mongoose = new Mongoose()
         this.ENV      = env
         this.uri      = this.getUri()
@@ -22,13 +23,20 @@ export class Database {
         }
     }
 
+    public static getInstance(env: string): Database {
+        if (this.instance) return this.instance;
+        const instance = new Database(env);
+        this.instance = instance;
+        return instance;
+    }
+
     private async connect() {
         await this.mongoose.connect(this.uri)
     }
 
     async getMongoose (): Promise<Mongoose> {
         if (this.mongoose.connection.readyState === 1) return this.mongoose // Connected
-        if (this.mongoose.connection.readyState === 2) return // Connecting
+        
         await this.connect()
         return this.mongoose 
     }

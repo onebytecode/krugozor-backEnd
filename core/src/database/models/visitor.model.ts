@@ -1,5 +1,5 @@
 import * as Mongoose from 'mongoose';
-import { Schema, Document }    from 'mongoose';
+import { Schema, Document } from 'mongoose';
 import { Session } from './session.model';
 import { Visit } from './visit.model';
 

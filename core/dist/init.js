@@ -15,12 +15,13 @@ function default_1() {
     return __awaiter(this, void 0, void 0, function* () {
         console.log('Init applicaction');
         const server = new server_1.Server(8080);
-        const db = new database_1.Database(ENV);
+        const db = database_1.Database.getInstance(ENV);
         server.assignMorgan();
         server.assignDefaultRoutes();
         db.getMongoose()
             .then(mongoose => {
             server.run();
+            console.log(`Database connected on::${mongoose.connection.db.databaseName}`);
         })
             .catch(err => {
             console.error(err);

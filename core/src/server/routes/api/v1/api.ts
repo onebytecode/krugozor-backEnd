@@ -17,12 +17,12 @@ import {
 import { getAllRooms } from './gql-models/room.gql-model';
 
 import { 
-            GraphQLObjectType, 
-            GraphQLSchema,
-            GraphQLString,
-            GraphQLInputObjectType,
-            GraphQLInputType
-         } from 'graphql'
+    GraphQLObjectType, 
+    GraphQLSchema,
+    GraphQLString,
+    GraphQLInputObjectType,
+    GraphQLInputType
+    } from 'graphql'
 
 export function Api (): Router {
     const router = Router()
@@ -52,7 +52,6 @@ export function Api (): Router {
         schema: schema,
         graphiql: true 
     }))
-
 
     return router 
 }

@@ -10,6 +10,12 @@ export function Routes(): Router {
         })
 
     router.use('/gql', Api())
+    router.route('/*')
+        .get((req, res) => {
+            res.sendStatus(400);
+        }).post((req, res) => {
+            res.sendStatus(400);
+        });
 
     return router
 }
