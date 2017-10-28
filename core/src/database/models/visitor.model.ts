@@ -36,7 +36,7 @@ interface IUpdateVisitorQuery {
 }
 
 interface IVisitorQuery {
-    _id?: Number  
+    _id?: Schema.Types.ObjectId  
     email?: string 
     sessionToken?: string
 }

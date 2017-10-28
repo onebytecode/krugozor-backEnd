@@ -12,7 +12,7 @@ export interface IVisitModel extends Document {
 }
 
 interface IVisitQuery {
-    visitorId: number;
+    visitorId: Schema.Types.ObjectId;
 }
 
 const VisitSchema = new Schema({
