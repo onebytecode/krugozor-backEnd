@@ -1,8 +1,10 @@
+import { VisitModel } from './visit.gql-model';
 import {
     GraphQLString,
     GraphQLObjectType,
     GraphQLNonNull,
-    GraphQLBoolean
+    GraphQLBoolean,
+    GraphQLList
 } from 'graphql'
 
 import { Visitor } from '../../../../../database/models/visitor.model'
@@ -19,7 +21,9 @@ const visitorFields = {
     password: { type: GraphQLString },
     entryTimestamp: { type: GraphQLString },
     exitTimestamp: { type: GraphQLString },
-    id: { type: GraphQLString }
+    id: { type: GraphQLString },
+    currentVisit: { type: VisitModel },
+    visitsHistory: { type: new GraphQLList(VisitModel) }
 }
 
 const registerVisitorFields = {
@@ -30,7 +34,7 @@ const registerVisitorFields = {
     birthdate: { type: GraphQLString },
     email: { type: new GraphQLNonNull(GraphQLString) },
     phoneNumber: { type: new GraphQLNonNull(GraphQLString) },
-    password: { type: GraphQLString }
+    password: { type: new GraphQLNonNull(GraphQLString) }
 }
 export const visitorModel = new GraphQLObjectType({
     name: 'Visitor',
@@ -46,9 +50,9 @@ export const getVisitor = {
         resolve: async function(_, { email, sessionToken }) {
             let result;
             if (email) {
-                result = await Visitor.find({ email })
+                result = await Visitor.findWithPopulation({ email })
             } else {
-                result = await Visitor.find({ sessionToken })
+                result = await Visitor.findWithPopulation({ sessionToken })
             }
             result['id'] = result._id 
 
@@ -90,10 +94,11 @@ export const visitorLogIn = {
         }
     }),
     args: {
-        email: { type: new GraphQLNonNull(GraphQLString) }
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        password: { type: new GraphQLNonNull(GraphQLString) }
     },
-    resolve: async function(_, { email }) {
-        const sessionToken = await Visitor.startSession({ email })
+    resolve: async function(_, { email, password }) {
+        const sessionToken = await Visitor.startSession({ email, password })
         return { sessionToken }
     }
 }
@@ -102,15 +107,14 @@ export const visitorLogOut = {
     type: new GraphQLObjectType({
         name: 'VisitorLogOutType',
         fields: { 
-            sessionToken: { type: new GraphQLNonNull(GraphQLString) }
-        }
+            status: { type: new GraphQLNonNull(GraphQLBoolean) }        }
     }),
     args: {
         sessionToken: { type: new GraphQLNonNull(GraphQLString) }
     },
     resolve: async function(_, { sessionToken }) {
         const result = await Visitor.stopSession({ sessionToken })
-        return { sessionToken: result } 
+        return { status: true } 
     }
 }
 

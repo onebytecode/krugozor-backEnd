@@ -17,8 +17,8 @@ const durationObject = new GraphQLObjectType({
 })
 const visitFields = {
     visitorId: { type: GraphQLString },
-    startedAt: { type: GraphQLString },
-    endedAt: { type: GraphQLString },
+    startDate: { type: GraphQLString },
+    endDate: { type: GraphQLString },
     duration: { type: GraphQLString }
 }
 

@@ -15,7 +15,8 @@ describe('Visitor model', () => {
             patronymic: "Jackson",
             birthdate: new Date("01 01 1978"),
             phoneNumber: "8-900-888-55-66",
-            email: "jackson@mail.com"
+            email: "jackson@mail.com",
+            password: "123"
         })
     })
 
@@ -40,14 +41,14 @@ describe('Visitor model', () => {
     })
 
     it ('should create session', async () => {
-        const result = await Visitor.startSession({ email: "jackson@mail.com" })
-        const visitor   = await Visitor.find({ email: "jackson@mail.com" })
+        const result = await Visitor.startSession({ email: "jackson@mail.com", password: "123" })
+        const visitor = await Visitor.find({ email: "jackson@mail.com" })
 
         expect(visitor.sessionToken).to.deep.equal(result)
     })
 
     it ('should stop visitor session', async () => {
-        const sessionToken = await Visitor.startSession({ email: "jackson@mail.com" })
+        const sessionToken = await Visitor.startSession({ email: "jackson@mail.com", password: "123" })
         const stoppedsessionToken = await Visitor.stopSession({ email: "jackson@mail.com" })
 
         expect(sessionToken).to.deep.equal(stoppedsessionToken)
@@ -86,7 +87,7 @@ describe('Visitor model', () => {
         await Visit.stop({ visitorId: visitor._id })
         const uVisitor = await Visitor.find({ email: 'jackson@mail.com' })
 
-        expect(uVisitor.visits.length).to.equal(2)
+        expect(uVisitor.visitsHistory.length).to.equal(2)
     })
 
     it ('should entry a Visitor', async () => {
@@ -102,6 +103,15 @@ describe('Visitor model', () => {
         const result = await Visitor.exit({ _id: visitor._id })
 
         expect(result).to.not.be.undefined 
+    })
+
+    it ('should find populated visitor', async () => {
+        const visitor = await Visitor.find({ email: 'jackson@mail.com' })
+        await Visitor.entry({ _id: visitor._id })
+        const result = await Visitor.findWithPopulation({ _id: visitor._id })
+
+        expect(result.currentVisit).to.be.an('object')
+        expect(result.currentVisit.startDate).to.be.an('date');
     })
 
     

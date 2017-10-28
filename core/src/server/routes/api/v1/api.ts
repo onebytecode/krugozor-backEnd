@@ -31,7 +31,6 @@ export function Api (): Router {
         name: 'Query',
         fields: {
             getVisitor,
-            getVisit,
             getAllRooms
         }
     })
