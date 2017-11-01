@@ -121,7 +121,7 @@ describe('Visitor gql model', () => {
             const queryString = `
             mutation {
                 registerNewVisitor(fname: "Boris", email: "test@mail.com", phoneNumber: "123") {
-                    fname
+                    sessionToken
                 }
             }`
             await chai.request('localhost:8080')

@@ -110,8 +110,7 @@ describe('Visitor model', () => {
         await Visitor.entry({ _id: visitor._id })
         const result = await Visitor.findWithPopulation({ _id: visitor._id })
 
-        expect(result.currentVisit).to.be.an('object')
-        expect(result.currentVisit.startDate).to.be.an('date');
+        expect(result.currentVisit).to.be.an('object').with.property('startDate').to.be.a('Date');
     })
 
     

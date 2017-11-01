@@ -72,7 +72,7 @@ export const registerNewVisitor = {
     args: registerVisitorFields,
     resolve: async function(_, visitorParams) {
         const visitor = await Visitor.create(visitorParams);
-        const sessionToken = await Visitor.startSession({ _id: visitor._id });
+        const sessionToken = await Visitor.startSession({ email: visitor.email, password: visitor.password });
         return { sessionToken }
     }
 }
