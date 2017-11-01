@@ -25,7 +25,7 @@ describe('Visit model tests', () => {
         expect(visit.startDate).to.not.be.undefined
         expect(visit.endDate).to.be.undefined
         expect(uVisitor.currentVisit).to.deep.equal(visit._id)
-        expect(uVisitor.visits[0]).to.deep.equal(visit._id)
+        expect(uVisitor.visitsHistory[0]).to.be.undefined;
     })
 
     it ('should stop visit', async () => {
@@ -42,7 +42,7 @@ describe('Visit model tests', () => {
         expect(visit.startDate).to.not.be.undefined
         expect(visit.endDate).to.not.be.undefined 
         expect(uVisitor.currentVisit).to.be.undefined 
-        expect(uVisitor.visits[0]).to.deep.equal(visit._id)
+        expect(uVisitor.visitsHistory[0]).to.deep.equal(visit._id)
     })
 
     it ('should get duration time', async () => {

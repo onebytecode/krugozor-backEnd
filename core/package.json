@@ -5,6 +5,10 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "NODE_ENV=test mocha --timeout 10000 -r ts-node/register src/main.spec.ts",
+    "test:plain": "NODE_ENV=test mocha --timeout 10000 -r ts-node/register",
+    "test:helpers": "npm run test:plain src/helpers/helpers.spec.ts",
+    "test:api:v1": "npm run test:plain src/server/routes/api/v1/api.spec.ts",
+    "test:models": "npm run test:plain src/database/models/models.spec.ts",
     "test:win": "set NODE_ENV=test && mocha --timeout 10000 -r ts-node/register src/main.spec.ts",
     "test:win:helpers": "set NODE_ENV=test && mocha --timeout 10000 -r ts-node/register src/helpers/helpers.spec.ts",
     "test:win:models": "set NODE_ENV=test && mocha --timeout 10000 -r ts-node/register src/database/models/models.spec.ts",

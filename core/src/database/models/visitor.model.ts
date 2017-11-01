@@ -1,7 +1,7 @@
 import * as Mongoose from 'mongoose';
 import { Schema, Document } from 'mongoose';
 import { Session } from './session.model';
-import { Visit } from './visit.model';
+import { Visit, IVisitModel } from './visit.model';
 
 export interface IVisitorModel extends Document {
     fname: string
@@ -14,7 +14,7 @@ export interface IVisitorModel extends Document {
     sessionToken?: Schema.Types.ObjectId 
     password?: string
     currentVisit?: Schema.Types.ObjectId
-    visits?: Array<Schema.Types.ObjectId>
+    visitsHistory?: Array<Schema.Types.ObjectId>
     entryTimestamp?: Date 
     exitTimestamp?: Date
 }
@@ -30,14 +30,15 @@ interface IUpdateVisitorQuery {
     sessionToken?: Schema.Types.ObjectId 
     password?: string,
     currentVisit?: Schema.Types.ObjectId
-    visits?: Array<Schema.Types.ObjectId>
+    visitsHistory?: Array<Schema.Types.ObjectId>
     entryTimestamp?: Date 
     exitTimestamp?: Date 
 }
 
 interface IVisitorQuery {
-    _id?: Number  
-    email?: string 
+    _id?: Schema.Types.ObjectId  
+    email?: string
+    password?: string;
     sessionToken?: string
 }
 
@@ -45,6 +46,7 @@ const VisitorSchema = new Schema ({
     fname: { type: String, required: '{PATH} is required!' },
     lname: String,
     patronymic: String,
+    password: String,
     gender: String,
     sessionToken: { type: Schema.Types.ObjectId, ref: 'session' },
     birthdate: Date,
@@ -52,7 +54,7 @@ const VisitorSchema = new Schema ({
     email: { type: String, required: true, unique: true },
     createdAt: { type: Date },
     updatedAt: { type: Date },
-    visits: [{ type: Schema.Types.ObjectId, ref: 'visit' }],
+    visitsHistory: [{ type: Schema.Types.ObjectId, ref: 'visit' }],
     currentVisit: { type: Schema.Types.ObjectId, ref: 'visit' },
     entryTimestamp: { type: Date },
     exitTimestamp: { type: Date }
@@ -84,10 +86,23 @@ export class Visitor {
     public static async find(visitor: IVisitorQuery) : Promise<IVisitorModel> {
         try {
             const result = await VisitorModel.findOne(visitor)
-            if (result === null) throw new Error('Visitor does not exists!');
+            if (result === null) throw new Error('Visitor does not exist!');
             return <IVisitorModel>result 
         } catch (e) {
             throw new Error(e)
+        }
+    }
+
+    public static async findWithPopulation(visitor: IVisitorQuery) {
+        try {
+            const result = await VisitorModel
+                .findOne(visitor)
+                .populate('currentVisit')
+                .populate('visitsHistory');
+            if (result === null) throw new Error('Visitor does not exist!');
+            return <IVisitorModel>result;
+        } catch(e) {
+            throw new Error(e);
         }
     }
 
@@ -116,10 +131,23 @@ export class Visitor {
         }
     }
 
-    // it returns session ID
-    public static async startSession(visitorQuery: IVisitorQuery): Promise<string> {
+    public static async authenticate(email: string, password: string) {
         try {
-            const visitor = await Visitor.find(visitorQuery)
+            const visitor = await Visitor.find({ email });
+            if (visitor.password === password) {
+                return visitor;
+            } else {
+                throw new Error('password dont match!');
+            }
+        } catch (e) {
+            throw new Error(e);
+        }
+    }
+
+    // it returns session ID
+    public static async startSession({ email, password }): Promise<string> {
+        try {
+            const visitor = await Visitor.authenticate(email, password);
             if (visitor.sessionToken) throw new Error('Visitor already have active session!');
             const session = await Session.create({ id: visitor._id })
             visitor.sessionToken = session._id 
