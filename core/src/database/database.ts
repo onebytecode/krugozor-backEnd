@@ -6,10 +6,18 @@ export class Database {
     private uri: string;
     private ENV: String
     private static instance: Database;
+    private sleep = (ms) => {
+        return new Promise((resolve) => {
+            setTimeout(resolve, ms);
+        })
+    }
 
     private constructor (env: String) {
         this.ENV      = env
         this.uri      = this.getUri()
+        Mongoose.connection.once('open', function() {
+            console.log('mongoose open');
+        });
     }
 
     private getUri(): string {
@@ -31,10 +39,22 @@ export class Database {
         await Mongoose.connect(this.uri);
     }
 
+    private async awaitMongooseConnection() {
+        if (Mongoose.connection.readyState === 1) {
+            return Mongoose
+        } else {
+            await this.sleep(50);
+            return this.awaitMongooseConnection();
+        }
+    }
+
     async getMongoose () {
-        if (Mongoose.connection.readyState === 1) return Mongoose // Connected
-        
-        await this.connect()
+        if (Mongoose.connection.readyState === 1) return Mongoose; // Connected
+        if (Mongoose.connection.readyState === 2) {
+            const _m = await this.awaitMongooseConnection();
+            return _m;
+        }
+        await this.connect();
         return Mongoose;
     }
 }

@@ -16,7 +16,7 @@ const visitorFields = {
     email: { type: new GraphQLNonNull(GraphQLString) },
     phoneNumber: { type: new GraphQLNonNull(GraphQLString) },
     sessionToken: { type: GraphQLString },
-    password: { type: GraphQLString },
+    password: { type: new GraphQLNonNull(GraphQLString) },
     entryTimestamp: { type: GraphQLString },
     exitTimestamp: { type: GraphQLString },
     id: { type: GraphQLString }
@@ -32,6 +32,13 @@ const registerVisitorFields = {
     phoneNumber: { type: new GraphQLNonNull(GraphQLString) },
     password: { type: GraphQLString }
 }
+const visitorSessionTokenType = new GraphQLObjectType({
+    name: 'VisitorSessionToken',
+    fields: {
+        sessionToken: { type: new GraphQLNonNull(GraphQLString) }
+    }
+})
+
 export const visitorModel = new GraphQLObjectType({
     name: 'Visitor',
     fields: visitorFields
@@ -57,11 +64,12 @@ export const getVisitor = {
 }
 
 export const registerNewVisitor = {
-    type: visitorModel,
+    type: visitorSessionTokenType,
     args: registerVisitorFields,
     resolve: async function(_, visitorParams) {
-        const result = await Visitor.create(visitorParams)
-        return result 
+        const visitor = await Visitor.create(visitorParams);
+        const sessionToken = await Visitor.startSession({ _id: visitor._id });
+        return { sessionToken }
     }
 }
 

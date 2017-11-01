@@ -29,19 +29,14 @@ describe('Visitor gql model', () => {
                         email: "boris@mail.com",
                         phoneNumber: "123123123"
                     ) {
-                        fname
-                        lname
-                        email
-                        phoneNumber
+                        sessionToken
                     }
                 }`
-            }).end((err, { body: { data: { registerNewVisitor: visitor } } }) => {
+            }).end((err, { body: { data: { registerNewVisitor: sessionToken } } }) => {
                 if (err) done(err)
 
-                expect(visitor.fname).to.be.equal('Boris')
-                expect(visitor.lname).to.be.equal('Grozny')
-                expect(visitor.email).to.be.equal('boris@mail.com')
-                expect(visitor.phoneNumber).to.be.equal('123123123')
+                expect(sessionToken).to.be.not.null;
+                expect(sessionToken).to.be.not.undefined;
                 done()
             })
     })
