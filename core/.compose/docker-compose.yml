@@ -7,7 +7,7 @@ services:
       - "27017:27017"
 
   b_anticafe_core: 
-    image: onebytecode/b_anticafe_core
+    image: onebytecode/krugozor-backend
     container_name: b_anticafe_core
     depends_on:
       - mongodb
@@ -15,3 +15,7 @@ services:
      - mongodb
     ports: 
       - "8080:8080"
+
+  watchtower:
+    image: v2tec/watchtower
+    command: --interval 60
