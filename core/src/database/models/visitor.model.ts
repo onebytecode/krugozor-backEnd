@@ -1,6 +1,6 @@
 import * as Mongoose from 'mongoose';
 import { Schema, Document } from 'mongoose';
-import { Session } from './session.model';
+import { Session, SessionType } from './session.model';
 import { Visit, IVisitModel } from './visit.model';
 
 export interface IVisitorModel extends Document {
@@ -11,7 +11,7 @@ export interface IVisitorModel extends Document {
     birthdate?: Date  
     phoneNumber: string 
     email: string 
-    sessionToken?: Schema.Types.ObjectId 
+    sessionTokens?: Array<Schema.Types.ObjectId>
     password?: string
     currentVisit?: Schema.Types.ObjectId
     visitsHistory?: Array<Schema.Types.ObjectId>
@@ -27,7 +27,7 @@ interface IUpdateVisitorQuery {
     birthdate?: Date  
     phoneNumber?: string 
     email?: string 
-    sessionToken?: Schema.Types.ObjectId 
+    sessionTokens?: Array<Schema.Types.ObjectId>
     password?: string,
     currentVisit?: Schema.Types.ObjectId
     visitsHistory?: Array<Schema.Types.ObjectId>
@@ -39,7 +39,7 @@ interface IVisitorQuery {
     _id?: Schema.Types.ObjectId  
     email?: string
     password?: string;
-    sessionToken?: string
+    sessionTokens?: Array<string>
 }
 
 const VisitorSchema = new Schema ({
@@ -48,7 +48,7 @@ const VisitorSchema = new Schema ({
     patronymic: String,
     password: String,
     gender: String,
-    sessionToken: { type: Schema.Types.ObjectId, ref: 'session' },
+    sessionTokens: [{ type: Schema.Types.ObjectId, ref: 'session' }],
     birthdate: Date,
     phoneNumber: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -145,26 +145,27 @@ export class Visitor {
     }
 
     // it returns session ID
-    public static async startSession({ email, password }): Promise<string> {
+    public static async startSession({ email, password }): Promise<SessionType> {
         try {
             const visitor = await Visitor.authenticate(email, password);
-            if (visitor.sessionToken) throw new Error('Visitor already have active session!');
-            const session = await Session.create({ id: visitor._id })
-            visitor.sessionToken = session._id 
+            const session = await Session.create(visitor._id)
+            visitor.sessionTokens.push(session._id);
             await visitor.save()
-            return session._id
+            return <SessionType>session;
         } catch (e) {
             throw new Error(e)
         }
     }
 
-    public static async stopSession(visitorQuery: IVisitorQuery): Promise<string> {
+    public static async stopSession(sessionToken: Schema.Types.ObjectId): Promise<SessionType> {
         try {
-            const visitor = await Visitor.find(visitorQuery)
-            const session = await Session.delete({ id: visitor._id })
-            visitor.sessionToken = undefined;
-            await visitor.save()
-            return session._id
+            const session = await Session.find(sessionToken);
+            if (!session) throw new Error('No such session!');
+            const visitor = await Visitor.find({ _id: session.visitorId });
+            visitor.sessionTokens = visitor.sessionTokens.filter(token => token !== session._id);
+            await Session.delete(session._id);
+            await visitor.save();
+            return session;
         } catch (e) {
             throw new Error(e)
         }

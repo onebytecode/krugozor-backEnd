@@ -71,11 +71,11 @@ describe('Visitor gql model', () => {
 
     it ('should entry visitor', async function() {
         await Visitor.create({ fname: 'Boris', email: 'boris@email.com', phoneNumber: '123', password: "123" })
-        const sessId = await Visitor.startSession({ email: 'boris@email.com', password: "123" })
+        const sess = await Visitor.startSession({ email: 'boris@email.com', password: "123" })
         try {
             const queryString = `
             mutation {
-               visitorTerminalTrigger(sessionToken: "${sessId}") {
+               visitorTerminalTrigger(sessionToken: "${sess._id}") {
                    isExit
                    isEntered
                } 
@@ -83,6 +83,7 @@ describe('Visitor gql model', () => {
             const result = await chai.request('localhost:8080')
                 .post('/gql')
                 .send({ query: queryString })
+            console.log(result);
             const { body: { data: { visitorTerminalTrigger: res } }} = result
 
             expect(res.isEntered).to.equal(true)
@@ -94,12 +95,12 @@ describe('Visitor gql model', () => {
 
     it ('should exit visitor', async function() {
         await Visitor.create({ fname: 'Boris', email: 'boris@email.com', phoneNumber: '123123123123', password: "123123123" })
-        const sessId = await Visitor.startSession({ email: 'boris@email.com', password: "123123123" })
-        await Visitor.entry({ sessionToken: sessId })
+        const sess = await Visitor.startSession({ email: 'boris@email.com', password: "123123123" })
+        await Visitor.entry({ _id: sess.visitorId })
         try {
             const queryString = `
             mutation {
-               visitorTerminalTrigger(sessionToken: "${sessId}") {
+               visitorTerminalTrigger(sessionToken: "${sess._id}") {
                    isExit
                    isEntered
                } 

@@ -13,8 +13,16 @@ const config_1 = require("./config");
 Mongoose.Promise = Promise;
 class Database {
     constructor(env) {
+        this.sleep = (ms) => {
+            return new Promise((resolve) => {
+                setTimeout(resolve, ms);
+            });
+        };
         this.ENV = env;
         this.uri = this.getUri();
+        Mongoose.connection.once('open', function () {
+            console.log('mongoose open');
+        });
     }
     getUri() {
         switch (this.ENV) {
@@ -35,10 +43,25 @@ class Database {
             yield Mongoose.connect(this.uri);
         });
     }
+    awaitMongooseConnection() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (Mongoose.connection.readyState === 1) {
+                return Mongoose;
+            }
+            else {
+                yield this.sleep(50);
+                return this.awaitMongooseConnection();
+            }
+        });
+    }
     getMongoose() {
         return __awaiter(this, void 0, void 0, function* () {
             if (Mongoose.connection.readyState === 1)
                 return Mongoose;
+            if (Mongoose.connection.readyState === 2) {
+                const _m = yield this.awaitMongooseConnection();
+                return _m;
+            }
             yield this.connect();
             return Mongoose;
         });

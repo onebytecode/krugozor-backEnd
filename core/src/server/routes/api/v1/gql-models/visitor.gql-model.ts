@@ -1,3 +1,4 @@
+import { Session } from './../../../../../database/models/session.model';
 import { VisitModel } from './visit.gql-model';
 import {
     GraphQLString,
@@ -59,7 +60,8 @@ export const getVisitor = {
             if (email) {
                 result = await Visitor.findWithPopulation({ email })
             } else {
-                result = await Visitor.findWithPopulation({ sessionToken })
+                const sess = await Session.find(sessionToken);
+                result = await Visitor.findWithPopulation({ _id: sess.visitorId })
             }
             result['id'] = result._id 
 
@@ -121,7 +123,7 @@ export const visitorLogOut = {
         sessionToken: { type: new GraphQLNonNull(GraphQLString) }
     },
     resolve: async function(_, { sessionToken }) {
-        const result = await Visitor.stopSession({ sessionToken })
+        const result = await Visitor.stopSession(sessionToken)
         return { status: true } 
     }
 }
@@ -138,15 +140,16 @@ export const visitorTerminalTrigger = {
         sessionToken: { type: new GraphQLNonNull(GraphQLString) }
     },
     resolve: async function(_, { sessionToken }) {
-        const visitor = await Visitor.find({ sessionToken })
+        const sess    = await Session.find(sessionToken);
+        const visitor = await Visitor.find({ _id: sess.visitorId })
         if (visitor.currentVisit) {
-            await Visitor.exit({ sessionToken })
+            await Visitor.exit({ _id: sess.visitorId })
             return {
                 isEntered: false,
                 isExit: true 
             }
         } else {
-            await Visitor.entry({ sessionToken })
+            await Visitor.entry({ _id: sess.visitorId })
             return {
                 isEntered: true,
                 isExit: false 
@@ -168,7 +171,8 @@ export const visitorEntry = {
     },
     resolve: async function(_, { sessionToken }) {
         const result  = { status: false, entryTimestamp: undefined }
-        const visitor = await Visitor.find({ sessionToken: sessionToken })
+        const sess = await Session.find(sessionToken);
+        const visitor = await Visitor.find({ _id: sess.visitorId })
         const date    = await Visitor.entry({ _id: visitor._id })
         if (date) {
             result.status = true
@@ -193,7 +197,8 @@ export const visitorExit = {
     },
     resolve: async function(_, { sessionToken } ) {
         const result  = { status: false, exitTimestamp: undefined, price: undefined }
-        const visitor = await Visitor.find({ sessionToken: sessionToken })
+        const sess = await Session.find(sessionToken);
+        const visitor = await Visitor.find({ _id: sess.visitorId })
         const date    = await Visitor.exit({ _id: visitor._id })
         if (date) {
             result.status = true 
