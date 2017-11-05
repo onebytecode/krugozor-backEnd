@@ -113,5 +113,16 @@ describe('Visitor model', () => {
         expect(result.currentVisit).to.be.an('object').with.property('startDate').to.be.a('Date');
     })
 
+    it('should have multiple ssessions', async () => {
+        const visitor = await Visitor.find({ email: 'jackson@mail.com' });
+        await Visitor.startSession({ email: visitor.email, password: visitor.password });
+        await Visitor.startSession({ email: visitor.email, password: visitor.password });
+
+        const result = await Visitor.find({ _id: visitor._id });
+        const tokens = result.sessionTokens;
+
+        expect(tokens).to.be.an('array').with.lengthOf(2);
+    })
+
     
 })

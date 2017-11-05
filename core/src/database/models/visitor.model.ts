@@ -35,6 +35,14 @@ interface IUpdateVisitorQuery {
     exitTimestamp?: Date 
 }
 
+/**
+ * @param _id?
+ * @param email?
+ * @param password?
+ * @param sessionTokens?
+ * 
+ * @interface IVisitorQuery
+ */
 interface IVisitorQuery {
     _id?: Schema.Types.ObjectId  
     email?: string
@@ -83,6 +91,13 @@ export class Visitor {
         }
     } 
 
+    /**
+     * 
+     * @param _id?
+     * @param email?
+     * @param password?
+     * @param sessionTokens?
+     */
     public static async find(visitor: IVisitorQuery) : Promise<IVisitorModel> {
         try {
             const result = await VisitorModel.findOne(visitor)

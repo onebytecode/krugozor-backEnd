@@ -83,7 +83,6 @@ describe('Visitor gql model', () => {
             const result = await chai.request('localhost:8080')
                 .post('/gql')
                 .send({ query: queryString })
-            console.log(result);
             const { body: { data: { visitorTerminalTrigger: res } }} = result
 
             expect(res.isEntered).to.equal(true)
